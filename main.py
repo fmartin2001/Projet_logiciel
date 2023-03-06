@@ -2,7 +2,8 @@ import sys
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QIntValidator, QFont
-from PyQt5.QtWidgets import QLabel, QApplication, QLineEdit, QWidget, QFormLayout, QPushButton, QGridLayout, QComboBox
+from PyQt5.QtWidgets import QLabel, QApplication, QLineEdit, QWidget, QMessageBox, QFormLayout, QPushButton, \
+    QGridLayout, QComboBox
 
 
 class FEN1(QWidget):
@@ -12,28 +13,29 @@ class FEN1(QWidget):
         self.initUI()
 
     def initUI(self):
-        e1 = QLineEdit()
-        e1.setMaxLength(20)
-        e1.setAlignment(Qt.AlignRight)
-        e1.setFont(QFont("Helvetica", 10))
+        self.nextfen = FEN2()
+        self.e1 = QLineEdit()
+        self.e1.setMaxLength(20)
+        self.e1.setAlignment(Qt.AlignRight)
+        self.e1.setFont(QFont("Helvetica", 10))
 
-        e2 = QLineEdit()
-        e2.setMaxLength(20)
-        e2.setAlignment(Qt.AlignRight)
-        e2.setFont(QFont("Arial", 10))
+        self.e2 = QLineEdit()
+        self.e2.setMaxLength(20)
+        self.e2.setAlignment(Qt.AlignRight)
+        self.e2.setFont(QFont("Arial", 10))
 
-        e3 = QLineEdit()
-        e3.setValidator(QIntValidator())
-        e3.setInputMask("99/99/9999")
+        self.e3 = QLineEdit()
+        self.e3.setValidator(QIntValidator())
+        self.e3.setInputMask("99/99/9999")
 
         self.btn = QPushButton()
         self.btn.setText("valider")
 
         flo = QFormLayout()
         # Qt.AlignVCenter
-        flo.addRow("nom", e1)
-        flo.addRow("prenom", e2)
-        flo.addRow("date de naissance", e3)
+        flo.addRow("nom", self.e1)
+        flo.addRow("prenom", self.e2)
+        flo.addRow("date de naissance", self.e3)
         flo.addWidget(self.btn)
 
         self.resize(500, 220)
@@ -42,16 +44,39 @@ class FEN1(QWidget):
         self.setWindowTitle("Coordonnees utilisateur")
         # set icon
         # self.setWindowIcon(QtGui.QIcon('icon.png'))
-        self.btn.clicked.connect(self.nextwindow)
+        # self.nom = str(e1.text())
+        # print(self.nom)
+        # self.pren = str(e2.text())
+        # self.date = str(e3.text())
+
+        self.btn.clicked.connect(self.rempli)
         # btn.setToolTip("Close the widget")
 
+    def rempli(self):
+        if (self.e1.text() != "" and self.e2.text() != "" and self.e3.text() != "//"):
+            self.nextwindow()
+        else:
+            msg = QMessageBox(win)
+            msg.setWindowTitle("erreur")
+            msg.setText("Veuillez remplir tous les champs")
+
+            x = msg.exec_()
 
     def textchanged(self, text):
         print("Changed: " + text)
 
     def nextwindow(self):
-        self.fen = FEN2()
-        self.fen.show()
+        # ecriture des infos de l'utilisateur
+        fichier = open("user.txt", "a")
+        fichier.write(self.e1.text())
+        fichier.write("\n")
+        fichier.write(self.e2.text())
+        fichier.write("\n")
+        fichier.write(self.e3.text())
+        fichier.write("\n")
+        fichier.close()
+        # changement de fenetre
+        self.nextfen.show()
         self.close()
 
 
@@ -126,6 +151,13 @@ class FEN3(QWidget):
         self.initUI()
 
     def initUI(self):
+        self.gener_new_img()
+
+        self.choisi1 = False
+        self.choisi2 = False
+        self.choisi3 = False
+        self.choisi4 = False
+
         self.img1 = QPixmap('img1.jpg')
         self.label1 = QLabel()
         self.label1.setPixmap(self.img1)
@@ -139,17 +171,19 @@ class FEN3(QWidget):
         self.label4 = QLabel()
         self.label4.setPixmap(self.img4)
 
-        self.label1.mouseDoubleClickEvent = self.clic
-        self.label2.mouseDoubleClickEvent = self.clic
-        self.label3.mouseDoubleClickEvent = self.clic
-        self.label4.mouseDoubleClickEvent = self.clic
+
+
+        # self.label2.installEventFilter()
+        # self.label4.mouseDoubleClickEvent
 
         self.bt1 = QPushButton("continuer")
         self.bt2 = QPushButton("valider")
 
         self.fen = QGridLayout()
         # Qt.AlignVCenter
+        self.btn3=QPushButton("choisir")
         self.fen.addWidget(self.label1, 1, 1)
+        self.fen.addWidget(self.btn3,1,1)
         self.fen.addWidget(self.label2, 1, 2)
         self.fen.addWidget(self.label3, 2, 1)
         self.fen.addWidget(self.label4, 2, 2)
@@ -157,8 +191,8 @@ class FEN3(QWidget):
         self.fen.addWidget(self.bt1, 3, 1)
         self.fen.addWidget(self.bt2, 3, 2)
 
-        # self.bt1.clicked.connect(self.nextimg)
-        # self.bt2.clicked.connect(self.nextwindow)
+        self.bt1.clicked.connect(self.nextimg)
+        self.bt2.clicked.connect(self.nextwindow)
 
         self.resize(600, 600)
         self.move(100, 100)
@@ -166,15 +200,40 @@ class FEN3(QWidget):
         self.setWindowTitle("choix du portrait")
         # set icon
         # self.setWindowIcon(QtGui.QIcon('icon.png'))
-        # self.btn.clicked.connect(self.nextwindow)
-        # btn.setToolTip("Close the widget")
 
-    def clic(self, event):
+    # def eventFilter(self, object, event):
+    #
+    #     if object == self.label2 and event.type() == QEvent.MouseButtonDblClick:
+    #         print("allelujah")
+
+
+        # return False
+    def changechoisi2(self):
+        if self.choisi2 != True:
+            self.choisi2=True
+        else:
+            self.choisi2=False
+
+    def gener_new_img(self):
+        print("ouiiii je genere des nouvelles images blablabla")
+
+
+    def mouseReleaseEvent(self, event):
+        super().mouseDoubleClickEvent(event)
+        print(event.button())
         cache = QLabel("Image choisie")
         cache.setFont(QFont("Helvetica", 30))
         # sender=self.sender
         # print(sender.text())
-        self.fen.addWidget(cache, 1, 1)
+        #self.fen.addWidget(cache, i % 2, i // 2)
+
+    def nextimg(self):
+        self.gener_new_img()
+
+    def nextwindow(self):
+        self.fen = FEN4()
+        self.fen.show()
+        self.close()
 
 
 class FEN4(QWidget):
@@ -208,8 +267,8 @@ if __name__ == "__main__":
     win = FEN1()
     window = FEN3()
     win.show()
-    # window.show()
+    window.show()
 
-    main_window = FEN4()
+    # main_window = FEN4()
     # main_window.show()
     sys.exit(app.exec_())
