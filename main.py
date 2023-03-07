@@ -5,7 +5,8 @@ from PyQt5.QtWidgets import QLabel, QTextEdit, QApplication, QLineEdit, QWidget,
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
-
+import numpy as np
+from PIL import Image
 
 class FEN1(QWidget):
 
@@ -93,22 +94,22 @@ class FEN2(QWidget):
         self.setGeometry(320, 320, 320, 320)
 
         # Labels
-        label1 = QLabel('Couleur des yeux:', self)
+        label1 = QLabel('Avait-il/elle un gros nez?:', self)
         # label1.move(20, 20)
         label2 = QLabel('Couleur des cheveux:', self)
         # label2.move(20, 60)
-        label3 = QLabel('Taille:', self)
+        label3 = QLabel('Sexe:', self)
         # label3.move(20, 100)
-        label4 = QLabel('Couleur de la peau:', self)
+        label4 = QLabel('Avait-il/elle des lunettes ?', self)
         # label4.move(20, 140)
 
         # Combo boxes
-        eye_colors = ['Bleu', 'Marron', 'Vert', 'Noir']
-        hair_colors = ['Noir', 'Brun', 'Blond', 'Roux']
+        nose = ['Oui', 'Non']
+        hair_colors = ['Brun', 'Gris', 'Blond', 'Noir']
         sex = ['Homme', 'Femme', 'Je ne sais pas']
-        skin_colors = ['blanc', 'noir', 'métisse']
-        self.eye_combo = QComboBox(self)
-        self.eye_combo.addItems(eye_colors)
+        lunettes = ['Oui', 'Non']
+        self.nose = QComboBox(self)
+        self.nose.addItems(nose)
         # self.eye_combo.move(140, 20)
         self.hair_combo = QComboBox(self)
         self.hair_combo.addItems(hair_colors)
@@ -116,8 +117,8 @@ class FEN2(QWidget):
         self.sex_combo = QComboBox(self)
         self.sex_combo.addItems(sex)
         # self.sex_combo.move(140, 100)
-        self.skin_combo = QComboBox(self)
-        self.skin_combo.addItems(skin_colors)
+        self.lunettes = QComboBox(self)
+        self.lunettes.addItems(lunettes)
         # self.skin_combo.move(140, 140)
 
         # Button
@@ -131,19 +132,19 @@ class FEN2(QWidget):
         layout.addWidget(label2, 2, 1)
         layout.addWidget(label3, 3, 1)
         layout.addWidget(label4, 4, 1)
-        layout.addWidget(self.eye_combo, 1, 2)
+        layout.addWidget(self.nose, 1, 2)
         layout.addWidget(self.hair_combo, 2, 2)
         layout.addWidget(self.sex_combo, 3, 2)
-        layout.addWidget(self.skin_combo, 4, 2)
+        layout.addWidget(self.lunettes, 4, 2)
         layout.addWidget(button, 5, 2)
         self.setLayout(layout)
 
     def submit(self):
-        eye_color = self.eye_combo.currentText()
+        nose = self.nose.currentText()
         hair_color = self.hair_combo.currentText()
         sex = self.sex_combo.currentText()
-        skin_colors = self.skin_combo.currentText()
-        print(f'Couleur des yeux : {eye_color}, Couleur des cheveux : {hair_color}, Sexe : {sex}, Couleur de la peau : {skin_colors}')
+        lunettes = self.lunettes.currentText()
+        print(f'Taille du nez : {nose}, Couleur des cheveux : {hair_color}, Sexe : {sex}, Avait-il des lunettes ? : {Lunettes}')
 
 
     def nextwindow2(self):
@@ -248,7 +249,7 @@ class FEN4(QMainWindow):
         # Créer les widgets pour l'interface graphique
         self.label = QLabel("Vous confirmez que ce portrait robot correspond le mieux à votre agresseur :")
         self.image_label = QLabel()
-        self.image_pixmap = QPixmap("/home/cbuton/Documents/INSA/4BIM/S2/ProjetDevLogi/gui/img1.jpg")
+        self.image_pixmap = QPixmap("/home/cbuton/Documents/INSA/4BIM/S2/ProjetDevLogi/Projet_logiciel/img1.jpg")
         self.image_label.setPixmap(self.image_pixmap.scaledToWidth(400))
         self.label2 = QLabel("Merci de réindiquer votre nom et prénom afin de vérifier votre identité.")
         self.text_edit = QTextEdit()
@@ -282,7 +283,7 @@ class FEN4(QMainWindow):
         c.drawString(1 * inch, 10 * inch, "Fiche récapitulative")
 
         # Dessiner l'image
-        c.drawInlineImage("/home/cbuton/Documents/INSA/4BIM/S2/ProjetDevLogi/gui/img1.jpg", 80, 250, height=270, width=480)
+        c.drawInlineImage("/home/cbuton/Documents/INSA/4BIM/S2/ProjetDevLogi/Projet_logiciel/img1.jpg", 80, 250, height=270, width=480)
 
         # Dessiner le texte
         c.setFontSize(12)
@@ -302,6 +303,6 @@ if __name__ == "__main__":
     #win.show()
     #window.show()
 
-    main_window = FEN4()
+    main_window = FEN2()
     main_window.show()
     sys.exit(app.exec_())
