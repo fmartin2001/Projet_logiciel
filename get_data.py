@@ -1,12 +1,13 @@
 import os
 import numpy as np
 from PIL import Image
+import pandas as pd
 
 
 def load_dataset(path_to_data, nb_im):
     """
      Args:
-        path_to_data (str): Path to the dataset.
+        path_to_data (str): Path to the dataset
         nb_im (str): Image number you want to load.
 
     Returns:
@@ -28,6 +29,15 @@ def load_dataset(path_to_data, nb_im):
     return img_pixel_list
 
 
+def img_id_attribute(attribute_list):
+    df = pd.read_csv("./CelebA/Anno/list_attr_celeba.txt")
+
+    for attr in attribute_list:
+        df = df.loc[df[attr] == 1]
+
+    return df
+
+
 if __name__ == "__main__":
     nb_img_to_load = 1000
     img_pixel_list = load_dataset('/home/fannie/Documents/S2/Logiciel/Projet_logiciel/CelebA/Img/img_align_celeba',
@@ -37,3 +47,8 @@ if __name__ == "__main__":
 
     if not os.path.isfile(path):
         np.save(path, img_pixel_list)
+
+    liste_attributs = ["Bangs", "Big_Lips", "Big_Nose"]
+    # mon_df = img_id_attribute(liste_attributs)
+
+    df = pd.read_csv("./CelebA/Anno/list_attr_celeba.txt")

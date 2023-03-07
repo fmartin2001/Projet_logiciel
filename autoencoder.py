@@ -133,3 +133,5 @@ if __name__ == "__main__":
 
     img_to_encode = get_data.load_dataset('./CelebA/Img/img_align_celeba',20)
     save_encoded_img(img_to_encode)
+
+    print("Done image encoded saving")

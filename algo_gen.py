@@ -45,7 +45,7 @@ def crossing_over(encoded_img_list, proba=0.5):
 
 def new_img_generator(encoded_img_selected):
     """
-    1 ou 2 img renvoyées normalement sous forme de liste
+    1 ou 2 img arrivent normalement sous forme de liste
     """
 
     if len(encoded_img_selected) == 2 :
@@ -65,7 +65,19 @@ def new_img_generator(encoded_img_selected):
     else :
         print("Np array should be of length 1 or 2")
 
+#def algo_gen() :
+    # selectionner des caractéristiques de départ pour réduire les données
+    # récupérer les img encodées correspondantes
+    # recupérer 4 images encodées parmi elles
 
+    # while compteur < 30 et nb_max_de_suite < 5
+        # les afficher
+        # utilisateur choisit : on récupère lesquelles il choisit (1 ou 2)
+        # list_img_choisies.append(identifiant de l'img)
+        # compteur +=1
+        # if list_img_choisie[-1] == list_img_choisie[-2]: si la dernière est la même que l'avant dernière
+        # nb_max_de_suite += 1
+        # on appelle new_img_generator
 
 
 if __name__ == "__main__":
