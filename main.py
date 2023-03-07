@@ -5,7 +5,18 @@ from PyQt5.QtGui import QPixmap, QIntValidator, QFont
 from PyQt5.QtWidgets import QLabel, QApplication, QLineEdit, QWidget, QMessageBox, QFormLayout, QPushButton, \
     QGridLayout, QComboBox
 
-
+class customLabel(QPushButton):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setText("sélectionner")
+        self.selected=False
+    def mouseReleaseEvent(self, e):
+        if self.selected==False :
+            self.setText("déselectionner")
+            self.selected=True
+        else :
+            self.setText("sélectionner")
+            self.selected = False
 class FEN1(QWidget):
 
     def __init__(self, parent=None):
@@ -176,20 +187,29 @@ class FEN3(QWidget):
         # self.label2.installEventFilter()
         # self.label4.mouseDoubleClickEvent
 
-        self.bt1 = QPushButton("continuer")
-        self.bt2 = QPushButton("valider")
+        self.bt1 = QPushButton("continuer la recherche")
+        self.bt2 = QPushButton("valider le visage final")
 
         self.fen = QGridLayout()
         # Qt.AlignVCenter
-        self.btn3=QPushButton("choisir")
-        self.fen.addWidget(self.label1, 1, 1)
-        self.fen.addWidget(self.btn3,1,1)
-        self.fen.addWidget(self.label2, 1, 2)
-        self.fen.addWidget(self.label3, 2, 1)
-        self.fen.addWidget(self.label4, 2, 2)
 
-        self.fen.addWidget(self.bt1, 3, 1)
-        self.fen.addWidget(self.bt2, 3, 2)
+        self.btn_selection1 = customLabel()
+        self.btn_selection2 = customLabel()
+        self.btn_selection3 = customLabel()
+        self.btn_selection4 = customLabel()
+
+
+        self.fen.addWidget(self.label1, 1, 1)
+        self.fen.addWidget(self.btn_selection1,2,1)
+        self.fen.addWidget(self.label2, 1, 2)
+        self.fen.addWidget(self.btn_selection2, 2, 2)
+        self.fen.addWidget(self.label3, 3, 1)
+        self.fen.addWidget(self.btn_selection3, 4, 1)
+        self.fen.addWidget(self.label4, 3, 2)
+        self.fen.addWidget(self.btn_selection4, 4, 2)
+
+        self.fen.addWidget(self.bt1, 5, 1)
+        self.fen.addWidget(self.bt2, 5, 2)
 
         self.bt1.clicked.connect(self.nextimg)
         self.bt2.clicked.connect(self.nextwindow)
@@ -201,34 +221,25 @@ class FEN3(QWidget):
         # set icon
         # self.setWindowIcon(QtGui.QIcon('icon.png'))
 
-    # def eventFilter(self, object, event):
-    #
-    #     if object == self.label2 and event.type() == QEvent.MouseButtonDblClick:
-    #         print("allelujah")
 
-
-        # return False
-    def changechoisi2(self):
-        if self.choisi2 != True:
-            self.choisi2=True
-        else:
-            self.choisi2=False
 
     def gener_new_img(self):
         print("ouiiii je genere des nouvelles images blablabla")
+        #   génération des 4 images
+        #   ouverture de la nouvelle fenetre
+        #   fermeture de l'ancienne
 
 
-    def mouseReleaseEvent(self, event):
-        super().mouseDoubleClickEvent(event)
-        print(event.button())
-        cache = QLabel("Image choisie")
-        cache.setFont(QFont("Helvetica", 30))
-        # sender=self.sender
-        # print(sender.text())
-        #self.fen.addWidget(cache, i % 2, i // 2)
 
     def nextimg(self):
+        self.selection1ou2()
         self.gener_new_img()
+        #   appel algo génétique (tab image choisies)
+
+    def selection1ou2(self):
+        cnt = 0
+        for i in range (4):
+
 
     def nextwindow(self):
         self.fen = FEN4()
