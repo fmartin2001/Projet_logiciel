@@ -1,9 +1,10 @@
 import sys
-
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QIntValidator, QFont
-from PyQt5.QtWidgets import QLabel, QApplication, QLineEdit, QWidget, QMessageBox, QFormLayout, QPushButton, \
-    QGridLayout, QComboBox
+from PyQt5.QtWidgets import QLabel, QTextEdit, QApplication, QLineEdit, QWidget, QMessageBox, QFormLayout, QPushButton, QGridLayout, QComboBox, QMainWindow, QVBoxLayout
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import inch
 
 
 class FEN1(QWidget):
@@ -87,6 +88,7 @@ class FEN2(QWidget):
         self.initUI()
 
     def initUI(self):
+        self.nextfen = FEN3()
         self.setWindowTitle('Caracteristiques')
         self.setGeometry(320, 320, 320, 320)
 
@@ -121,7 +123,7 @@ class FEN2(QWidget):
         # Button
         button = QPushButton('Soumettre', self)
         # button.move(100, 180)
-        button.clicked.connect(self.submit)
+        button.clicked.connect(self.nextwindow2)
 
         layout = QGridLayout()
         # Qt.AlignVCenter
@@ -141,9 +143,12 @@ class FEN2(QWidget):
         hair_color = self.hair_combo.currentText()
         sex = self.sex_combo.currentText()
         skin_colors = self.skin_combo.currentText()
-        print(
-            f'Couleur des yeux : {eye_color}, Couleur des cheveux : {hair_color}, Sexe : {sex}, Couleur de la peau : {skin_colors}')
+        print(f'Couleur des yeux : {eye_color}, Couleur des cheveux : {hair_color}, Sexe : {sex}, Couleur de la peau : {skin_colors}')
 
+
+    def nextwindow2(self):
+        self.nextfen.show()
+        self.close()
 
 class FEN3(QWidget):
     def __init__(self, parent=None):
@@ -236,39 +241,67 @@ class FEN3(QWidget):
         self.close()
 
 
-class FEN4(QWidget):
+class FEN4(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        # Création d'un widget QLabel pour afficher l'image
-        image = QLabel(self)
-        pixmap = QPixmap('img4.jpg')  # Chemin vers votre image
-        image.setPixmap(pixmap)
-        self.fen = QGridLayout()
-        # Qt.AlignVCenter
-        self.fen.addWidget(image, 1, 1)
-        # image.setGeometry(10, 10, 200, 200)
+        # Créer les widgets pour l'interface graphique
+        self.label = QLabel("Vous confirmez que ce portrait robot correspond le mieux à votre agresseur :")
+        self.image_label = QLabel()
+        self.image_pixmap = QPixmap("/home/cbuton/Documents/INSA/4BIM/S2/ProjetDevLogi/gui/img1.jpg")
+        self.image_label.setPixmap(self.image_pixmap.scaledToWidth(400))
+        self.label2 = QLabel("Merci de réindiquer votre nom et prénom afin de vérifier votre identité.")
+        self.text_edit = QTextEdit()
+        self.button = QPushButton("Sauvegarder")
 
-        # Création d'un widget QLabel pour afficher le texte
-        texte = QLabel(self)
-        texte.setText("Bim est le coupable")
-        # texte.setGeometry(50, 260, 300, 40)
+        # Créer un layout vertical pour contenir les widgets
+        layout = QVBoxLayout()
+        layout.addWidget(self.label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.image_label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.label2, alignment=Qt.AlignCenter)
+        layout.addWidget(self.text_edit)
+        layout.addWidget(self.button, alignment=Qt.AlignCenter)
 
-        self.fen.addWidget(texte, 2, 1)
-        self.setLayout(self.fen)
-        # Configuration de la fenêtre principale
-        self.setGeometry(300, 300, 300, 300)
-        self.setWindowTitle('Robotte les fesses')
-        self.show()
+        # Créer un widget pour contenir le layout
+        central_widget = QWidget(self)
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
+
+        # Associer un signal à l'événement "clicked" du bouton
+        self.button.clicked.connect(self.save_to_pdf)
+
+    def save_to_pdf(self):
+        # Obtenir le contenu du QTextEdit
+        text = self.text_edit.toPlainText()
+
+        # Créer un objet canvas pour générer le PDF
+        c = canvas.Canvas("mon_document.pdf", pagesize=letter)
+
+        # Dessiner le titre
+        c.setFontSize(20)
+        c.drawString(1 * inch, 10 * inch, "Fiche récapitulative")
+
+        # Dessiner l'image
+        c.drawInlineImage("/home/cbuton/Documents/INSA/4BIM/S2/ProjetDevLogi/gui/img1.jpg", 80, 250, height=270, width=480)
+
+        # Dessiner le texte
+        c.setFontSize(12)
+        textobject = c.beginText(1 * inch, 7.5 * inch)
+        for line in text.split('\n'):
+            textobject.textLine(line)
+        c.drawText(textobject)
+
+        # Enregistrer le PDF et fermer le canvas
+        c.save()
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    win = FEN1()
-    window = FEN3()
-    win.show()
-    window.show()
+    #win = FEN1()
+    #window = FEN3()
+    #win.show()
+    #window.show()
 
-    # main_window = FEN4()
-    # main_window.show()
+    main_window = FEN4()
+    main_window.show()
     sys.exit(app.exec_())
