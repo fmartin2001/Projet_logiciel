@@ -6,11 +6,13 @@ from PyQt5.QtWidgets import QLabel, QApplication, QLineEdit, QWidget, QMessageBo
     QGridLayout, QComboBox
 
 class customLabel(QPushButton):
+    # bouton personnaliser pour selectionner et deselectionner les visages
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setText("sélectionner")
         self.selected=False
     def mouseReleaseEvent(self, e):
+        #redefinition de l'evenement "relacher la souris"
         if self.selected==False :
             self.setText("déselectionner")
             self.selected=True
@@ -18,52 +20,50 @@ class customLabel(QPushButton):
             self.setText("sélectionner")
             self.selected = False
 class FEN1(QWidget):
+    #creation de la fenetre 1
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.initUI()
 
     def initUI(self):
-        self.nextfen = FEN2()
-        self.e1 = QLineEdit()
+        self.nextfen = FEN2()# sa fenetre suivante est la fenetre 2
+        self.e1 = QLineEdit()# premiere entrée de texte
         self.e1.setMaxLength(20)
         self.e1.setAlignment(Qt.AlignRight)
         self.e1.setFont(QFont("Helvetica", 10))
 
-        self.e2 = QLineEdit()
+        self.e2 = QLineEdit()# deuxieme entrée de texte
         self.e2.setMaxLength(20)
         self.e2.setAlignment(Qt.AlignRight)
         self.e2.setFont(QFont("Arial", 10))
 
-        self.e3 = QLineEdit()
+        self.e3 = QLineEdit()# troisieme pour la date de naissance
         self.e3.setValidator(QIntValidator())
         self.e3.setInputMask("99/99/9999")
 
-        self.btn = QPushButton()
+        self.btn = QPushButton()# bouton valider pour passer à la fenetre suivante
         self.btn.setText("valider")
 
-        flo = QFormLayout()
+        flo = QFormLayout()# on met tout dans une grille pour que ca s'adapte à la largeur de la page
         # Qt.AlignVCenter
         flo.addRow("nom", self.e1)
         flo.addRow("prenom", self.e2)
         flo.addRow("date de naissance", self.e3)
         flo.addWidget(self.btn)
 
-        self.resize(500, 220)
-        self.move(100, 100)
-        self.setLayout(flo)
+        self.resize(500, 220)#taille de la fenetre
+        self.move(100, 100)# position de la fenetre
+        self.setLayout(flo)# affichage de la grille
         self.setWindowTitle("Coordonnees utilisateur")
         # set icon
         # self.setWindowIcon(QtGui.QIcon('icon.png'))
-        # self.nom = str(e1.text())
-        # print(self.nom)
-        # self.pren = str(e2.text())
-        # self.date = str(e3.text())
 
-        self.btn.clicked.connect(self.rempli)
+
+        self.btn.clicked.connect(self.rempli)#action assignée au bouton valider (appelle la fct rempli)
         # btn.setToolTip("Close the widget")
 
-    def rempli(self):
+    def rempli(self):# si tous les champs sont rempli appelle la fonction page suivante, sinon affiche un message d'erreur
         if (self.e1.text() != "" and self.e2.text() != "" and self.e3.text() != "//"):
             self.nextwindow()
         else:
@@ -73,10 +73,10 @@ class FEN1(QWidget):
 
             x = msg.exec_()
 
-    def textchanged(self, text):
+    def textchanged(self, text): # a ma connaissance je ne l'utilise plus
         print("Changed: " + text)
 
-    def nextwindow(self):
+    def nextwindow(self):# enregistre les infos (nom, prenom, date) dans un fichier et ferme la fen 1 pour ouvrir la fen 2
         # ecriture des infos de l'utilisateur
         fichier = open("user.txt", "a")
         fichier.write(self.e1.text())
@@ -156,19 +156,16 @@ class FEN2(QWidget):
             f'Couleur des yeux : {eye_color}, Couleur des cheveux : {hair_color}, Sexe : {sex}, Couleur de la peau : {skin_colors}')
 
 
-class FEN3(QWidget):
+class FEN3(QWidget):#creation de la fenetre 3
     def __init__(self, parent=None):
         super().__init__(parent)
         self.initUI()
 
     def initUI(self):
+        #appelle la fonction qui prend les images générées par fannie et natacha il faut voir si c'est la même la premiere fois et les fois suivante?
         self.gener_new_img()
 
-        self.choisi1 = False
-        self.choisi2 = False
-        self.choisi3 = False
-        self.choisi4 = False
-
+#une à une on prend les image les met dans un label puis une grille
         self.img1 = QPixmap('img1.jpg')
         self.label1 = QLabel()
         self.label1.setPixmap(self.img1)
@@ -182,23 +179,19 @@ class FEN3(QWidget):
         self.label4 = QLabel()
         self.label4.setPixmap(self.img4)
 
-
-
-        # self.label2.installEventFilter()
-        # self.label4.mouseDoubleClickEvent
-
         self.bt1 = QPushButton("continuer la recherche")
         self.bt2 = QPushButton("valider le visage final")
 
         self.fen = QGridLayout()
         # Qt.AlignVCenter
 
+#creation des boutons puour selectionner les images
         self.btn_selection1 = customLabel()
         self.btn_selection2 = customLabel()
         self.btn_selection3 = customLabel()
         self.btn_selection4 = customLabel()
 
-
+# on met tout dans une grille
         self.fen.addWidget(self.label1, 1, 1)
         self.fen.addWidget(self.btn_selection1,2,1)
         self.fen.addWidget(self.label2, 1, 2)
@@ -211,8 +204,8 @@ class FEN3(QWidget):
         self.fen.addWidget(self.bt1, 5, 1)
         self.fen.addWidget(self.bt2, 5, 2)
 
-        self.bt1.clicked.connect(self.nextimg)
-        self.bt2.clicked.connect(self.nextwindow)
+        self.bt1.clicked.connect(self.nextimg) #on assigne une action au bouton continuer
+        self.bt2.clicked.connect(self.nextwindow)#on assigne une action au bouton valider
 
         self.resize(600, 600)
         self.move(100, 100)
@@ -238,10 +231,10 @@ class FEN3(QWidget):
 
     def selection1ou2(self):
         cnt = 0
-        for i in range (4):
+        #for i in range (4):
 
 
-    def nextwindow(self):
+    def nextwindow(self): #sauvegarde le choix final et envoie sur la page suivante (code pas fini sur cette fonction, pour l'instant renvoie juste sur la page suivante)
         self.fen = FEN4()
         self.fen.show()
         self.close()
