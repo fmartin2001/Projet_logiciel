@@ -97,6 +97,10 @@ def plot_image_reconstruction(autoencoder, X_test, n=10):
         ax.get_yaxis().set_visible(False)
     plt.show()
 
+def save_encoded_img(img_pixel_list):
+    encoded_img = encoder.predict(img_pixel_list)
+    np.save(f"Data/{len(encoded_img)}_encoded_img", encoded_img)
+
 
 if __name__ == "__main__":
     img_pixel_list = get_data.load_dataset('./CelebA/Img/img_align_celeba',100)
@@ -127,5 +131,5 @@ if __name__ == "__main__":
     plot_loss(autoencoder)
     plot_image_reconstruction(autoencoder, X_test)
 
-    encoded_img = encoder.predict(img_pixel_list)
-    np.save(f"Data/{len(encoded_img)}_encoded_img", encoded_img)
+    img_to_encode = get_data.load_dataset('./CelebA/Img/img_align_celeba',20)
+    save_encoded_img(img_to_encode)
