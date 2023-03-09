@@ -2,17 +2,25 @@ import sys
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QIntValidator, QFont
-from PyQt5.QtWidgets import QLabel, QTextEdit, QApplication, QLineEdit, QWidget, QMessageBox, QFormLayout, QPushButton, QGridLayout, QComboBox, QMainWindow, QVBoxLayout
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.units import inch
-import numpy as np
-from PIL import Image
-
 from PyQt5.QtWidgets import QLabel, QApplication, QLineEdit, QWidget, QMessageBox, QFormLayout, QPushButton, \
     QGridLayout, QComboBox
+from PyQt5.QtWidgets import QTextEdit, QMainWindow, QVBoxLayout
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import inch
+from reportlab.pdfgen import canvas
+import numpy as np
+import algo_gen as algo
 
-class customLabel(QPushButton):
+
+class customButton(QPushButton):
+    """Redefinie le widget QPushButton
+        ajoute les attributs suivants :
+        le texte 'sélectionner' ou 'désélectionner'
+        selected -- boolean qui indique si le bouton est sélectionner (= on a cliqué un nombre impair de fois dessus)
+
+        redefinition de l'evenement mouseRelease :
+        change les deux attributs
+        """
     # bouton personnaliser pour selectionner et deselectionner les visages
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -27,7 +35,11 @@ class customLabel(QPushButton):
             self.setText("sélectionner")
             self.selected = False
 class FEN1(QWidget):
-    #creation de la fenetre 1
+    """Création de la fenetre 1
+            Cette fenetre sert à rentrer et sauvegarder les informations de l'utilisateur
+            Elle contient trois champs à remplir
+            Si un champs est vide au moment de la validation, un message d'erreur apparait
+            """
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -35,25 +47,30 @@ class FEN1(QWidget):
 
     def initUI(self):
         self.nextfen = FEN2()# sa fenetre suivante est la fenetre 2
-        self.e1 = QLineEdit()# premiere entrée de texte
+
+        # permet de rentrer le nom
+        self.e1 = QLineEdit()#
         self.e1.setMaxLength(20)
         self.e1.setAlignment(Qt.AlignRight)
         self.e1.setFont(QFont("Helvetica", 10))
 
-        self.e2 = QLineEdit()# deuxieme entrée de texte
+        # permet de rentrer le prenom
+        self.e2 = QLineEdit()
         self.e2.setMaxLength(20)
         self.e2.setAlignment(Qt.AlignRight)
-        self.e2.setFont(QFont("Arial", 10))
+        self.e2.setFont(QFont("Helevetica", 10))
 
-        self.e3 = QLineEdit()# troisieme pour la date de naissance
+        # permet de rentrer la date de naissance
+        self.e3 = QLineEdit()
         self.e3.setValidator(QIntValidator())
         self.e3.setInputMask("99/99/9999")
 
-        self.btn = QPushButton()# bouton valider pour passer à la fenetre suivante
-        self.btn.setText("valider")
+        # bouton "soumettre" pour passer à la fenetre suivante et sauvegarder les données entrées
+        self.btn = QPushButton()
+        self.btn.setText("soumettre")
 
-        flo = QFormLayout()# on met tout dans une grille pour que ca s'adapte à la largeur de la page
-        # Qt.AlignVCenter
+        # Grille de mise en page
+        flo = QFormLayout()
         flo.addRow("nom", self.e1)
         flo.addRow("prenom", self.e2)
         flo.addRow("date de naissance", self.e3)
@@ -63,28 +80,29 @@ class FEN1(QWidget):
         self.move(100, 100)# position de la fenetre
         self.setLayout(flo)# affichage de la grille
         self.setWindowTitle("Coordonnees utilisateur")
-        # set icon
         # self.setWindowIcon(QtGui.QIcon('icon.png'))
 
+        # rattachement du bouton "soumettre à l'évenement "changer de fenetre" (apres avoir vérifier si les champs n'étaient pas vides)
+        self.btn.clicked.connect(self.rempli)
 
-        self.btn.clicked.connect(self.rempli)#action assignée au bouton valider (appelle la fct rempli)
-        # btn.setToolTip("Close the widget")
+    def rempli(self):
+        """renvoie vers la fonction nextwindow ou un message d'erreur
+            prend seulement les attributs en paramètres
 
-    def rempli(self):# si tous les champs sont rempli appelle la fonction page suivante, sinon affiche un message d'erreur
+        """
         if (self.e1.text() != "" and self.e2.text() != "" and self.e3.text() != "//"):
             self.nextwindow()
         else:
-            msg = QMessageBox(win)
+            msg = QMessageBox(main_window)
             msg.setWindowTitle("erreur")
             msg.setText("Veuillez remplir tous les champs")
+            msg.exec_()
 
-            x = msg.exec_()
+    def nextwindow(self):
+        """enregistre les infos (nom, prenom, date) dans un fichier
+        ferme la fenetre 1 puis ouvre la fenetre 2
 
-    def textchanged(self, text): # a ma connaissance je ne l'utilise plus
-        print("Changed: " + text)
-
-    def nextwindow(self):# enregistre les infos (nom, prenom, date) dans un fichier et ferme la fen 1 pour ouvrir la fen 2
-        # ecriture des infos de l'utilisateur
+        """
         fichier = open("user.txt", "a")
         fichier.write(self.e1.text())
         fichier.write("\n")
@@ -93,6 +111,7 @@ class FEN1(QWidget):
         fichier.write(self.e3.text())
         fichier.write("\n")
         fichier.close()
+
         # changement de fenetre
         self.nextfen.show()
         self.close()
@@ -167,16 +186,22 @@ class FEN2(QWidget):
         self.nextfen.show()
         self.close()
 
-class FEN3(QWidget):#creation de la fenetre 3
+class FEN3(QWidget):
+    """Creation de la fenetre 3
+    composée de 4 images
+    4 boutons de sélection
+    1 label explicatif
+    2 boutons pour valider et terminer ou valider et continuer la recherche
+    """
     def __init__(self, parent=None):
         super().__init__(parent)
         self.initUI()
 
     def initUI(self):
-        #appelle la fonction qui prend les images générées par fannie et natacha il faut voir si c'est la même la premiere fois et les fois suivante?
-        self.gener_new_img()
+        # Appelle la fonction qui prend les images générées par fannie et natacha il faut voir si c'est la même la premiere fois et les fois suivante?
+        #self.gener_new_img()
 
-#une à une on prend les image les met dans un label puis une grille
+        # Une à une on prend les image et on les place dans un label
         self.img1 = QPixmap('img1.jpg')
         self.label1 = QLabel()
         self.label1.setPixmap(self.img1)
@@ -190,62 +215,105 @@ class FEN3(QWidget):#creation de la fenetre 3
         self.label4 = QLabel()
         self.label4.setPixmap(self.img4)
 
+        #Ajout des deux boutons de validations
         self.bt1 = QPushButton("continuer la recherche")
-        self.bt2 = QPushButton("valider le visage final")
+        self.bt2 = QPushButton("soumettre le visage final")
 
+        # Création de grille pour la mise en page
         self.fen = QGridLayout()
         # Qt.AlignVCenter
 
-#creation des boutons puour selectionner les images
-        self.btn_selection1 = customLabel()
-        self.btn_selection2 = customLabel()
-        self.btn_selection3 = customLabel()
-        self.btn_selection4 = customLabel()
+        # Creation des boutons de selection des images
+        self.btn_selection1 = customButton()
+        self.btn_selection2 = customButton()
+        self.btn_selection3 = customButton()
+        self.btn_selection4 = customButton()
 
-# on met tout dans une grille
-        self.fen.addWidget(self.label1, 1, 1)
+        # Placement des widgets dans la grille
+        self.fen.addWidget(self.label1, 1, 1, alignment=Qt.AlignCenter)
         self.fen.addWidget(self.btn_selection1,2,1)
-        self.fen.addWidget(self.label2, 1, 2)
+        self.fen.addWidget(self.label2, 1, 2, alignment=Qt.AlignCenter)
         self.fen.addWidget(self.btn_selection2, 2, 2)
-        self.fen.addWidget(self.label3, 3, 1)
+        self.fen.addWidget(self.label3, 3, 1, alignment=Qt.AlignCenter)
         self.fen.addWidget(self.btn_selection3, 4, 1)
-        self.fen.addWidget(self.label4, 3, 2)
+        self.fen.addWidget(self.label4, 3, 2, alignment=Qt.AlignCenter)
         self.fen.addWidget(self.btn_selection4, 4, 2)
 
-        self.fen.addWidget(self.bt1, 5, 1)
-        self.fen.addWidget(self.bt2, 5, 2)
+        self.fen.addWidget(QLabel("Sélectionner le ou les deux visages qui ressemble(nt) le plus à votre agresseur"),5,1)
+        self.fen.addWidget(self.bt1, 6, 1)
+        self.fen.addWidget(self.bt2, 6, 2)
 
-        self.bt1.clicked.connect(self.nextimg) #on assigne une action au bouton continuer
-        self.bt2.clicked.connect(self.nextwindow)#on assigne une action au bouton valider
+        # Attribution au boutons de validation les evenements correspondants
+        self.bt1.clicked.connect(self.selection1ou2)
+        self.bt2.clicked.connect(self.nextwindow)
 
-        self.resize(600, 600)
-        self.move(100, 100)
+        self.resize(600, 600)       # taille
+        self.move(100, 100)         # position
         self.setLayout(self.fen)
         self.setWindowTitle("choix du portrait")
-        # set icon
         # self.setWindowIcon(QtGui.QIcon('icon.png'))
 
 
-
-    def gener_new_img(self):
-        print("ouiiii je genere des nouvelles images blablabla")
-        #   génération des 4 images
-        #   ouverture de la nouvelle fenetre
-        #   fermeture de l'ancienne
-
-
-
     def nextimg(self):
-        self.selection1ou2()
-        self.gener_new_img()
+        """Reste sur la meme fenetre en changeant les images
+        Envoie sous forme de liste les images selectionnees par l'utilisateur à l'algorithme genetique
+        Actualise img1.jpg, img2.jpg, img3.jpg, img4.jpg
+        Relance la fenetre
+        """
+        list = [self.btn_selection1, self.btn_selection2, self.btn_selection3, self.btn_selection4]
+        list_selection=[]
+        for i in range (len (list)) :
+            if list[i].selected==True :
+                #list_selection.append(img[i])#avec img[] le tableau d'image encodées envoyées à l'initial
+                list_selection=[1] #permet juste que ca compile
+                print("ça passe par là")
+
         #   appel algo génétique (tab image choisies)
+        # new_img = algo.new_img_generator(list_selection)
+    #   génération des 4 images
+        from PIL import Image
 
+        # img1 = Image.fromarray(new_img[0])
+        # img1.save("img1.jpg")
+        # img2 = Image.fromarray(new_img[1])
+        # img2.save("img2.jpg")
+        # img3 = Image.fromarray(new_img[2])
+        # img3.save("img3.jpg")
+        # img4 = Image.fromarray(new_img[3])
+        # img4.save("img4.jpg")
+    #   ouverture de la nouvelle fenetre
+        self.newfen=FEN3()
+        self.newfen.show()
+
+    #   fermeture de l'ancienne
+        self.close()
     def selection1ou2(self):
+        """Verification du nombre d'images selectionnees
+        Il doit etre egal à 1 ou 2
+        Si nombre reglementaire, renvoie à la fonction nextimg
+        Sinon affiche un message d'erreur
+        """
+        list=[self.btn_selection1,self.btn_selection2,self.btn_selection3, self.btn_selection4]
         cnt = 0
-        #for i in range (4):
+        for btn in list:
+            if btn.selected==True :
+                cnt=cnt+1
+        if cnt==1 or cnt==2 :
+            self.nextimg()
+        else:
+            msg = QMessageBox(main_window)
+            msg.setWindowTitle("erreur")
+            msg.setText("Veuillez sélectionner un ou deux visages")
+            msg.exec_()
 
-
-    def nextwindow(self): #sauvegarde le choix final et envoie sur la page suivante (code pas fini sur cette fonction, pour l'instant renvoie juste sur la page suivante)
+    def nextwindow(self):
+        """Renvoie sur la fenetre suivante
+        Sauvegarde le choix final
+        """
+        # msg = QMessageBox(main_window)
+        # msg.setWindowTitle("Etes vous sur(e) de votre choix?")
+        # msg.setText("Souhaitez vous valider votre choix?")
+        # msg.exec_()
         self.fen = FEN4()
         self.fen.show()
         self.close()
@@ -312,6 +380,6 @@ if __name__ == "__main__":
     #win.show()
     #window.show()
 
-    main_window = FEN2()
+    main_window = FEN1()
     main_window.show()
     sys.exit(app.exec_())
