@@ -103,35 +103,33 @@ def save_encoded_img(img_pixel_list):
 
 
 if __name__ == "__main__":
-    img_pixel_list = get_data.load_dataset('./CelebA/Img/img_align_celeba',100)
+     img_pixel_list = get_data.load_dataset('./img_align_celeba/img_align_celeba',1000)
 
-    X_train, X_test = train_test_split(img_pixel_list,
-                                       test_size=0.2,
-                                       random_state=0)
-    print("Done train test split")
+     X_train, X_test = train_test_split(img_pixel_list,
+                                        test_size=0.2,
+                                        random_state=0)
+     print("Done train test split")
 
-    autoencoder, encoder, decoder = encodeur_decodeur()
+     autoencoder, encoder, decoder = encodeur_decodeur()
 
-    print("Done autoencoder creation")
+     print("Done autoencoder creation")
 
-    autoencoder.fit(X_train, X_train,
-                    epochs=2,
-                    batch_size=50,
-                    shuffle=True,
-                    validation_data=(X_test, X_test))
+     autoencoder.fit(X_train, X_train,
+                     epochs=100,
+                     batch_size=50,
+                     shuffle=True,
+                     validation_data=(X_test, X_test))
 
-    print("Done autoencoder training")
+     print("Done autoencoder training")
+     encoder.save("./Model/encoder")
+     decoder.save("./Model/decoder")
+     autoencoder.save("./Model/autoencoder")
 
-    encoder.save("./Model/encoder")
-    decoder.save("./Model/decoder")
-    autoencoder.save("./Model/autoencoder")
+     print("Done model saving")
+     plot_loss(autoencoder)
+     plot_image_reconstruction(autoencoder, X_test)
 
-    print("Done model saving")
+     img_to_encode = get_data.load_dataset('./img_align_celeba/img_align_celeba',20)
+     save_encoded_img(img_to_encode)
 
-    plot_loss(autoencoder)
-    plot_image_reconstruction(autoencoder, X_test)
-
-    img_to_encode = get_data.load_dataset('./CelebA/Img/img_align_celeba',20)
-    save_encoded_img(img_to_encode)
-
-    print("Done image encoded saving")
+     print("Done image encoded saving")

@@ -65,19 +65,20 @@ def new_img_generator(encoded_img_selected):
     else :
         print("Np array should be of length 1 or 2")
 
-#def algo_gen() :
+#def algo_gen(encoded_img_selected) :
     # selectionner des caractéristiques de départ pour réduire les données
     # récupérer les img encodées correspondantes
     # recupérer 4 images encodées parmi elles
+    #
 
-    # while compteur < 30 et nb_max_de_suite < 5
+    # while cnt < 30 and nb_max_de_suite < 5:
         # les afficher
         # utilisateur choisit : on récupère lesquelles il choisit (1 ou 2)
         # list_img_choisies.append(identifiant de l'img)
-        # compteur +=1
-        # if list_img_choisie[-1] == list_img_choisie[-2]: si la dernière est la même que l'avant dernière
+        # cnt +=1
+        # if list_img_choisie[-1] == list_img_choisie[-2]: #si la dernière est la même que l'avant dernière
         # nb_max_de_suite += 1
-        # on appelle new_img_generator
+        #new_img_generator(encoded_img_selected)
 
 
 if __name__ == "__main__":
