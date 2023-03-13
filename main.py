@@ -8,6 +8,32 @@ from reportlab.lib.units import inch
 import numpy as np
 from PIL import Image
 
+class FEN0(QWidget):
+
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('Projet')
+        # Créer les widgets pour l'interface graphique
+        self.label = QLabel("Bienvenue dans un générateur de portrait robot ! Nous vous prions de répondre le plus honnêtement possible afin de faire un protrait robot de votre agresseur le plus représentatif possible")
+        self.image_label = QLabel()
+        self.image_pixmap = QPixmap("logo.jpg")
+        self.image_label.setPixmap(self.image_pixmap.scaledToWidth(400))
+        button = QPushButton("Démarrer",self)
+        self.nextfen = FEN1()
+        button.clicked.connect(self.nextwindow2)
+
+        # Créer un layout vertical pour contenir les widgets
+        layout = QVBoxLayout()
+        layout.addWidget(self.label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.image_label, alignment=Qt.AlignCenter)
+        layout.addWidget(button, alignment=Qt.AlignCenter)
+        self.setLayout(layout)
+
+
+    def nextwindow2(self):
+        self.nextfen.show()
+        self.close()
+
 class FEN1(QWidget):
 
     def __init__(self, parent=None):
@@ -144,8 +170,8 @@ class FEN2(QWidget):
         hair_color = self.hair_combo.currentText()
         sex = self.sex_combo.currentText()
         lunettes = self.lunettes.currentText()
-        print(f'Taille du nez : {nose}, Couleur des cheveux : {hair_color}, Sexe : {sex}, Avait-il des lunettes ? : {Lunettes}')
-
+        self.liste_caract=[nose,hair_color,sex,lunettes]
+        print(self.liste_caract)
 
     def nextwindow2(self):
         self.nextfen.show()
@@ -303,6 +329,6 @@ if __name__ == "__main__":
     #win.show()
     #window.show()
 
-    main_window = FEN2()
+    main_window = FEN0()
     main_window.show()
     sys.exit(app.exec_())
