@@ -266,8 +266,8 @@ class FEN3(QWidget):
         self.fen.addWidget(self.bt2, 6, 1, alignment=Qt.AlignLeft)
 
         # Attribution au boutons de validation les evenements correspondants
-        self.bt1.clicked.connect(self.selection1ou2)
-        self.bt2.clicked.connect(self.nextwindow)
+        self.bt1.clicked.connect(self.selection1vs5)
+        self.bt2.clicked.connect(self.selection1_final)
 
         self.resize(600, 600)       # taille
         self.move(100, 100)         # position
@@ -309,25 +309,43 @@ class FEN3(QWidget):
 
     #   fermeture de l'ancienne
         self.close()
-    def selection1ou2(self):
+    def selection1vs5(self):
         """Verification du nombre d'images selectionnees
-        Il doit etre egal à 1 ou 2
+        Il doit etre egal entre 1 et 5 inclu
         Si nombre reglementaire, renvoie à la fonction nextimg
         Sinon affiche un message d'erreur
         """
-        list=[self.btn_selection1,self.btn_selection2,self.btn_selection3, self.btn_selection4]
+        list=[self.btn_selection1,self.btn_selection2,self.btn_selection3, self.btn_selection4,self.btn_selection5,self.btn_selection6]
         cnt = 0
         for btn in list:
             if btn.isChecked():
                 cnt=cnt+1
-        if cnt==1 or cnt==2 :
+        if cnt!=0 and cnt!=6 :
             self.nextimg()
         else:
             msg = QMessageBox(main_window)
-            msg.setWindowTitle("erreur")
-            msg.setText("Veuillez sélectionner un ou deux visages")
+            msg.setWindowTitle("Erreur")
+            msg.setText("Veuillez sélectionner au moins un visage et au plus cinq")
             msg.exec_()
 
+    def selection1_final(self):
+        """Verification du nombre d'images selectionnees
+        Il doit etre egal à 1 pour valider
+        Si nombre reglementaire, renvoie à la fonction nextwindow
+        Sinon affiche un message d'erreur
+        """
+        list=[self.btn_selection1,self.btn_selection2,self.btn_selection3, self.btn_selection4,self.btn_selection5,self.btn_selection6]
+        cnt = 0
+        for btn in list:
+            if btn.isChecked():
+                cnt=cnt+1
+        if cnt==1 :
+            self.nextwindow()
+        else:
+            msg = QMessageBox(main_window)
+            msg.setWindowTitle("Erreur")
+            msg.setText("Veuillez sélectionner un seul visage pour valider")
+            msg.exec_()
     def nextwindow(self):
         """Renvoie sur la fenetre suivante
         Sauvegarde le choix final
