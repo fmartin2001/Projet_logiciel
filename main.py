@@ -220,10 +220,19 @@ class FEN3(QWidget):
         self.img4 = QPixmap('img4.jpg')
         self.label4 = QLabel()
         self.label4.setPixmap(self.img4)
+        self.img5 = QPixmap('img5.jpeg')
+        self.label5 = QLabel()
+        self.label5.setPixmap(self.img5)
+        self.img6 = QPixmap('img6.jpeg')
+        self.label6 = QLabel()
+        self.label6.setPixmap(self.img6)
+
 
         #Ajout des deux boutons de validations
-        self.bt1 = QPushButton("continuer la recherche")
-        self.bt2 = QPushButton("soumettre le visage final")
+        self.bt1 = QPushButton("Continuer la recherche")
+        self.bt1.setFixedSize(200, 30)
+        self.bt2 = QPushButton("Soumettre le visage final")
+        self.bt2.setFixedSize(200, 30)
 
         # Création de grille pour la mise en page
         self.fen = QGridLayout()
@@ -234,20 +243,27 @@ class FEN3(QWidget):
         self.btn_selection2 = customButton()
         self.btn_selection3 = customButton()
         self.btn_selection4 = customButton()
+        self.btn_selection5 = customButton()
+        self.btn_selection6 = customButton()
 
         # Placement des widgets dans la grille
         self.fen.addWidget(self.label1, 1, 1, alignment=Qt.AlignCenter)
-        self.fen.addWidget(self.btn_selection1,2,1)
+        self.fen.addWidget(self.btn_selection1,2,1, alignment=Qt.AlignCenter)
         self.fen.addWidget(self.label2, 1, 2, alignment=Qt.AlignCenter)
-        self.fen.addWidget(self.btn_selection2, 2, 2)
-        self.fen.addWidget(self.label3, 3, 1, alignment=Qt.AlignCenter)
-        self.fen.addWidget(self.btn_selection3, 4, 1)
-        self.fen.addWidget(self.label4, 3, 2, alignment=Qt.AlignCenter)
-        self.fen.addWidget(self.btn_selection4, 4, 2)
+        self.fen.addWidget(self.btn_selection2, 2, 2, alignment=Qt.AlignCenter)
+        self.fen.addWidget(self.label3, 1, 3, alignment=Qt.AlignCenter)
+        self.fen.addWidget(self.btn_selection3, 2, 3, alignment=Qt.AlignCenter)
+        self.fen.addWidget(self.label4, 3, 1, alignment=Qt.AlignCenter)
+        self.fen.addWidget(self.btn_selection4, 4, 1, alignment=Qt.AlignCenter)
+        self.fen.addWidget(self.label5, 3, 2, alignment=Qt.AlignCenter)
+        self.fen.addWidget(self.btn_selection5, 4, 2, alignment=Qt.AlignCenter)
+        self.fen.addWidget(self.label6, 3, 3, alignment=Qt.AlignCenter)
+        self.fen.addWidget(self.btn_selection6, 4, 3, alignment=Qt.AlignCenter)
 
-        self.fen.addWidget(QLabel("Sélectionner le ou les deux visages qui ressemble(nt) le plus à votre agresseur"),5,1)
-        self.fen.addWidget(self.bt1, 6, 1)
-        self.fen.addWidget(self.bt2, 6, 2)
+
+        self.fen.addWidget(QLabel("Sélectionnez le ou les deux visages qui ressemble(nt) le plus à votre agresseur"),6,2, alignment=Qt.AlignCenter)
+        self.fen.addWidget(self.bt1, 6, 3, alignment=Qt.AlignRight)
+        self.fen.addWidget(self.bt2, 6, 1, alignment=Qt.AlignLeft)
 
         # Attribution au boutons de validation les evenements correspondants
         self.bt1.clicked.connect(self.selection1ou2)
