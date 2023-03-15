@@ -285,7 +285,7 @@ class FEN3(QWidget):
         list = [self.btn_selection1, self.btn_selection2, self.btn_selection3, self.btn_selection4]
         list_selection=[]
         for i in range (len (list)) :
-            if list[i].selected==True :
+            if list[i].isChecked() :
                 #list_selection.append(img[i])#avec img[] le tableau d'image encodées envoyées à l'initial
                 list_selection=[1] #permet juste que ca compile
                 print("ça passe par là")
@@ -318,7 +318,7 @@ class FEN3(QWidget):
         list=[self.btn_selection1,self.btn_selection2,self.btn_selection3, self.btn_selection4]
         cnt = 0
         for btn in list:
-            if btn.selected==True :
+            if btn.isChecked():
                 cnt=cnt+1
         if cnt==1 or cnt==2 :
             self.nextimg()
@@ -398,10 +398,10 @@ class FEN4(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     #win = FEN1()
-    window = FEN3()
+    #window = FEN3()
     #win.show()
-    window.show()
+    #window.show()
 
-    #main_window = FEN1()
-    #main_window.show()
+    main_window = FEN1()
+    main_window.show()
     sys.exit(app.exec_())
