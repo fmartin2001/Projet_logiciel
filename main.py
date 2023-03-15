@@ -1,5 +1,5 @@
 import sys
-
+import os
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QIntValidator, QFont, QIcon
 from PyQt5.QtWidgets import QLabel, QApplication, QLineEdit, QWidget, QMessageBox, QFormLayout, QPushButton, \
@@ -335,18 +335,24 @@ class FEN3(QWidget):
         Sinon affiche un message d'erreur
         """
         list=[self.btn_selection1,self.btn_selection2,self.btn_selection3, self.btn_selection4,self.btn_selection5,self.btn_selection6]
+        list = np.array(list)
         cnt = 0
+        btn_selected = 0
         for btn in list:
             if btn.isChecked():
                 cnt=cnt+1
+                btn_selected = int(np.where(list == btn)[0]+1) #quel numéro d'image c'était ?
+                name = "img" + str(btn_selected)
+                img_selected = getattr(self, name) #image correspondant a la photo choisie
+
         if cnt==1 :
-            self.nextwindow()
+            self.nextwindow(img_selected)
         else:
             msg = QMessageBox(main_window)
             msg.setWindowTitle("Erreur")
             msg.setText("Veuillez sélectionner un seul visage pour valider")
             msg.exec_()
-    def nextwindow(self):
+    def nextwindow(self,img):
         """Renvoie sur la fenetre suivante
         Sauvegarde le choix final
         """
@@ -354,19 +360,20 @@ class FEN3(QWidget):
         # msg.setWindowTitle("Etes vous sur(e) de votre choix?")
         # msg.setText("Souhaitez vous valider votre choix?")
         # msg.exec_()
-        self.fen = FEN4()
+
+        self.fen = FEN4(img) #prend en paramètres l'image choisie
         self.fen.show()
         self.close()
 
 
 class FEN4(QMainWindow):
-    def __init__(self):
+    def __init__(self, image):
         super().__init__()
 
         # Créer les widgets pour l'interface graphique
         self.label = QLabel("Vous confirmez que ce portrait robot correspond le mieux à votre agresseur :")
         self.image_label = QLabel()
-        self.image_pixmap = QPixmap("/home/cbuton/Documents/INSA/4BIM/S2/ProjetDevLogi/Projet_logiciel/img1.jpg")
+        self.image_pixmap = image
         self.image_label.setPixmap(self.image_pixmap.scaledToWidth(400))
         self.label2 = QLabel("Merci de réindiquer votre nom et prénom afin de vérifier votre identité.")
         self.text_edit = QTextEdit()
@@ -399,9 +406,6 @@ class FEN4(QMainWindow):
         c.setFontSize(20)
         c.drawString(1 * inch, 10 * inch, "Fiche récapitulative")
 
-        # Dessiner l'image
-        c.drawInlineImage("/home/cbuton/Documents/INSA/4BIM/S2/ProjetDevLogi/Projet_logiciel/img1.jpg", 80, 250, height=270, width=480)
-
         # Dessiner le texte
         c.setFontSize(12)
         textobject = c.beginText(1 * inch, 7.5 * inch)
@@ -409,8 +413,26 @@ class FEN4(QMainWindow):
             textobject.textLine(line)
         c.drawText(textobject)
 
+        # Sauter une page
+        c.showPage()
+
+        # Titre de la seconde page
+        c.setFontSize(20)
+        c.drawString(1 * inch, 10 * inch, "Portrait robot de l'agresseur")
+
+        # Convertit l'image QPixmap en PIL Image
+        qimage = self.image_pixmap.toImage()
+        # Sauvegarde de l'image dans le directory
+        qimage.save("./img_choisie.png", "PNG", -1)
+        # Dessine l'image dans le pdf
+        c.drawInlineImage("./img_choisie.png", 80, 250, height=270, width=480)
         # Enregistrer le PDF et fermer le canvas
         c.save()
+
+        # Supprime l'image du directory
+        os.remove("./img_choisie.png")
+
+
 
 
 if __name__ == "__main__":
