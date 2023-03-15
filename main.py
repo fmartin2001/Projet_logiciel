@@ -99,8 +99,8 @@ class FEN1(QWidget):
         if (self.e1.text() != "" and self.e2.text() != "" and self.e3.text() != "//"):
             self.nextwindow()
         else:
-            msg = QMessageBox(main_window)
-            msg.setWindowTitle("erreur")
+            msg = QMessageBox()
+            msg.setWindowTitle("Erreur")
             msg.setText("Veuillez remplir tous les champs")
             msg.exec_()
 
@@ -323,7 +323,7 @@ class FEN3(QWidget):
         if cnt!=0 and cnt!=6 :
             self.nextimg()
         else:
-            msg = QMessageBox(main_window)
+            msg = QMessageBox()
             msg.setWindowTitle("Erreur")
             msg.setText("Veuillez sélectionner au moins un visage et au plus cinq")
             msg.exec_()
@@ -348,7 +348,7 @@ class FEN3(QWidget):
         if cnt==1 :
             self.nextwindow(img_selected)
         else:
-            msg = QMessageBox(main_window)
+            msg = QMessageBox()
             msg.setWindowTitle("Erreur")
             msg.setText("Veuillez sélectionner un seul visage pour valider")
             msg.exec_()
@@ -438,10 +438,10 @@ class FEN4(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     #win = FEN1()
-    #window = FEN3()
+    window = FEN3()
     #win.show()
-    #window.show()
+    window.show()
 
-    main_window = FEN1()
-    main_window.show()
+    #main_window = FEN1()
+    #main_window.show()
     sys.exit(app.exec_())
