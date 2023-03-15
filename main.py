@@ -1,7 +1,7 @@
 import sys
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QIntValidator, QFont
+from PyQt5.QtGui import QPixmap, QIntValidator, QFont, QIcon
 from PyQt5.QtWidgets import QLabel, QApplication, QLineEdit, QWidget, QMessageBox, QFormLayout, QPushButton, \
     QGridLayout, QComboBox
 from PyQt5.QtWidgets import QTextEdit, QMainWindow, QVBoxLayout
@@ -24,16 +24,22 @@ class customButton(QPushButton):
     # bouton personnaliser pour selectionner et deselectionner les visages
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setText("sélectionner")
-        self.selected=False
-    def mouseReleaseEvent(self, e):
-        #redefinition de l'evenement "relacher la souris"
-        if self.selected==False :
-            self.setText("déselectionner")
-            self.selected=True
-        else :
-            self.setText("sélectionner")
-            self.selected = False
+        #self.setText("Choisir")
+        self.setFixedSize(30, 30)
+        self.setStyleSheet("background-color: #D3D3D3")
+        self.setCheckable(True)
+        self.clicked.connect(self.on_click)
+
+    def on_click(self):
+        if self.isChecked():
+            #self.setText("Choisi")
+            check = QIcon('check.png')
+            self.setIcon(check)
+            self.setStyleSheet("background-color: #008000")
+        else:
+            #self.setText("Choisir")
+            self.setIcon(QIcon())
+            self.setStyleSheet("background-color: white")
 class FEN1(QWidget):
     """Création de la fenetre 1
             Cette fenetre sert à rentrer et sauvegarder les informations de l'utilisateur
@@ -71,15 +77,15 @@ class FEN1(QWidget):
 
         # Grille de mise en page
         flo = QFormLayout()
-        flo.addRow("nom", self.e1)
-        flo.addRow("prenom", self.e2)
-        flo.addRow("date de naissance", self.e3)
+        flo.addRow("Nom", self.e1)
+        flo.addRow("Prénom", self.e2)
+        flo.addRow("Date de naissance", self.e3)
         flo.addWidget(self.btn)
 
         self.resize(500, 220)#taille de la fenetre
         self.move(100, 100)# position de la fenetre
         self.setLayout(flo)# affichage de la grille
-        self.setWindowTitle("Coordonnees utilisateur")
+        self.setWindowTitle("Coordonnées utilisateur")
         # self.setWindowIcon(QtGui.QIcon('icon.png'))
 
         # rattachement du bouton "soumettre à l'évenement "changer de fenetre" (apres avoir vérifier si les champs n'étaient pas vides)
@@ -376,10 +382,10 @@ class FEN4(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     #win = FEN1()
-    #window = FEN3()
+    window = FEN3()
     #win.show()
-    #window.show()
+    window.show()
 
-    main_window = FEN1()
-    main_window.show()
+    #main_window = FEN1()
+    #main_window.show()
     sys.exit(app.exec_())
