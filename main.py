@@ -162,7 +162,7 @@ class FEN2(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.nextfen = FEN3()
+        #self.nextfen = FEN3()
 
         self.setWindowTitle('Caracteristiques')
         self.setGeometry(320, 320, 320, 320)
@@ -227,7 +227,9 @@ class FEN2(QWidget):
 
 
     def nextwindow2(self):
-        self.nextfen.show()
+        # self.nextfen.show()
+        img = np.load('./Data/20_encoded_img.npy')
+        algo.algo_gen(img[0:6])
         self.close()
 
     def backwindow(self):
@@ -245,13 +247,10 @@ class FEN3(QWidget):
     1 label explicatif
     2 boutons pour valider et terminer ou valider et continuer la recherche
     """
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.initUI()
+    def __init__(self, img):
+        super().__init__()
 
-    def initUI(self):
-        # Appelle la fonction qui prend les images générées par fannie et natacha il faut voir si c'est la même la premiere fois et les fois suivante?
-
+        self.img_encod=img
         self.gen_premieres_img()
 
         # Une à une on prend les image et on les place dans un label
@@ -267,10 +266,10 @@ class FEN3(QWidget):
         self.img4 = QPixmap('img4.png')
         self.label4 = QLabel()
         self.label4.setPixmap(self.img4)
-        self.img5 = QPixmap('img5.jpeg')
+        self.img5 = QPixmap('img5.png')
         self.label5 = QLabel()
         self.label5.setPixmap(self.img5)
-        self.img6 = QPixmap('img6.jpeg')
+        self.img6 = QPixmap('img6.png')
         self.label6 = QLabel()
         self.label6.setPixmap(self.img6)
 
@@ -323,14 +322,17 @@ class FEN3(QWidget):
         self.setWindowIcon(QIcon('logo.jpg'))
 
     def gen_premieres_img(self):
-        img_encoded_list = np.load('./Data/20_encoded_img.npy')
+        #img_encoded_list = np.load('./Data/20_encoded_img.npy')
+
         autoencoder=load_model("./Model/autoencoder")
-        img_list=autoencoder.decoder.predict(img_encoded_list)
+        img_list=autoencoder.decoder.predict(self.img_encod)
 
         mat_im.imsave("img1.png", img_list[0])
         mat_im.imsave("img2.png", img_list[1])
         mat_im.imsave("img3.png", img_list[2])
         mat_im.imsave("img4.png", img_list[3])
+        mat_im.imsave("img5.png", img_list[4])
+        mat_im.imsave("img6.png", img_list[5])
 
     def nextimg(self):
         """Reste sur la meme fenetre en changeant les images
@@ -340,27 +342,26 @@ class FEN3(QWidget):
         """
         img = np.load('./Data/20_encoded_img.npy')
         list = [self.btn_selection1, self.btn_selection2, self.btn_selection3, self.btn_selection4]
-        list_selection=[]
+        img_choisie=[]
         for i in range (len (list)) :
 
             if list[i].isChecked() :
-                #list_selection.append(img[i])#avec img[] le tableau d'image encodées envoyées à l'initial
-                list_selection=[1] #permet juste que ca compile
+                img_choisie.append(self.img_encod[i]) #permet juste que ca compile
                 print("ça passe par là")
 
         #   appel algo génétique (tab image choisies)
-        new_img = algo.new_img_generator(list_selection)
+        #new_img = algo.new_img_generator(list_selection)
     #   génération des 4 images
-        from PIL import Image
-
-        img1 = Image.fromarray(new_img[0])
-        img1.save("img1.jpg")
-        img2 = Image.fromarray(new_img[1])
-        img2.save("img2.jpg")
-        img3 = Image.fromarray(new_img[2])
-        img3.save("img3.jpg")
-        img4 = Image.fromarray(new_img[3])
-        img4.save("img4.jpg")
+    #     from PIL import Image
+    #
+    #     img1 = Image.fromarray(new_img[0])
+    #     img1.save("img1.jpg")
+    #     img2 = Image.fromarray(new_img[1])
+    #     img2.save("img2.jpg")
+    #     img3 = Image.fromarray(new_img[2])
+    #     img3.save("img3.jpg")
+    #     img4 = Image.fromarray(new_img[3])
+    #     img4.save("img4.jpg")
 
     #   ouverture de la nouvelle fenetre
         self.newfen=FEN3()
@@ -467,6 +468,10 @@ class FEN4(QMainWindow):
         c.setFontSize(20)
         c.drawString(1 * inch, 10 * inch, "Fiche récapitulative")
 
+        # Convertit l'image QPixmap en PIL Image
+        qimage = self.image_pixmap.toImage()
+        # Sauvegarde de l'image dans le directory
+        qimage.save("./img_choisie.png", "PNG", -1)
         # Dessiner l'image
         c.drawInlineImage("img1.jpg", 80, 250, height=270, width=480)
 
@@ -484,10 +489,6 @@ class FEN4(QMainWindow):
         c.setFontSize(20)
         c.drawString(1 * inch, 10 * inch, "Portrait robot de l'agresseur")
 
-        # Convertit l'image QPixmap en PIL Image
-        qimage = self.image_pixmap.toImage()
-        # Sauvegarde de l'image dans le directory
-        qimage.save("./img_choisie.png", "PNG", -1)
         # Dessine l'image dans le pdf
         c.drawInlineImage("./img_choisie.png", 80, 250, height=270, width=480)
         # Enregistrer le PDF et fermer le canvas
@@ -495,7 +496,7 @@ class FEN4(QMainWindow):
 
         # Supprime l'image du directory
         os.remove("./img_choisie.png")
-
+        self.close()
 
 
 
