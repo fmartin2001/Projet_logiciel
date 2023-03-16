@@ -1,5 +1,5 @@
 import sys
-
+import os
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QIntValidator, QFont, QIcon
 from PyQt5.QtWidgets import QLabel, QApplication, QLineEdit, QWidget, QMessageBox, QFormLayout, QPushButton, \
@@ -28,16 +28,24 @@ class customButton(QPushButton):
     # bouton personnaliser pour selectionner et deselectionner les visages
     def __init__(self, parent=None):
         super().__init__(parent)
+        #self.setText("Choisir")
+        self.setFixedSize(30, 30)
+        self.setStyleSheet("background-color: #D3D3D3")
+        self.setCheckable(True)
+        self.clicked.connect(self.on_click)
+
+    def on_click(self):
+        if self.isChecked():
+            #self.setText("Choisi")
+            check = QIcon('check.png')
+            self.setIcon(check)
+            self.setStyleSheet("background-color: #008000")
+        else:
+            #self.setText("Choisir")
+            self.setIcon(QIcon())
+            self.setStyleSheet("background-color: white")
         self.setText("sélectionner")
         self.selected=False
-    def mouseReleaseEvent(self, e):
-        #redefinition de l'evenement "relacher la souris"
-        if self.selected==False :
-            self.setText("déselectionner")
-            self.selected=True
-        else :
-            self.setText("sélectionner")
-            self.selected = False
 
 class FEN0(QWidget):
 
@@ -102,9 +110,9 @@ class FEN1(QWidget):
 
         # Grille de mise en page
         flo = QFormLayout()
-        flo.addRow("nom", self.e1)
-        flo.addRow("prenom", self.e2)
-        flo.addRow("date de naissance", self.e3)
+        flo.addRow("Nom", self.e1)
+        flo.addRow("Prénom", self.e2)
+        flo.addRow("Date de naissance", self.e3)
         flo.addWidget(self.btn)
 
         self.resize(500, 220)#taille de la fenetre
@@ -124,8 +132,8 @@ class FEN1(QWidget):
         if (self.e1.text() != "" and self.e2.text() != "" and self.e3.text() != "//"):
             self.nextwindow()
         else:
-            msg = QMessageBox(main_window)
-            msg.setWindowTitle("erreur")
+            msg = QMessageBox()
+            msg.setWindowTitle("Erreur")
             msg.setText("Veuillez remplir tous les champs")
             msg.exec_()
 
@@ -194,17 +202,16 @@ class FEN2(QWidget):
 
         layout = QGridLayout()
         # Qt.AlignVCenter
-        layout.addWidget(label1, 1, 1)
+        layout.addWidget(label1, 4, 1)
         layout.addWidget(label2, 2, 1)
         layout.addWidget(label3, 3, 1)
-        layout.addWidget(label4, 4, 1)
+        layout.addWidget(label4, 1, 1)
         layout.addWidget(self.nose, 1, 2)
         layout.addWidget(self.hair_combo, 2, 2)
         layout.addWidget(self.sex_combo, 3, 2)
         layout.addWidget(self.lunettes, 4, 2)
         layout.addWidget(button, 5, 2)
         self.setLayout(layout)
-        self.setWindowIcon(QIcon('logo.jpg'))
 
     def submit(self):
         nose = self.nose.currentText()
@@ -227,7 +234,6 @@ class FEN3(QWidget):
     """
     def __init__(self, parent=None):
         super().__init__(parent)
-        #self.cnt_ouverture
         self.initUI()
 
     def initUI(self):
@@ -248,10 +254,19 @@ class FEN3(QWidget):
         self.img4 = QPixmap('img4.png')
         self.label4 = QLabel()
         self.label4.setPixmap(self.img4)
+        self.img5 = QPixmap('img5.jpeg')
+        self.label5 = QLabel()
+        self.label5.setPixmap(self.img5)
+        self.img6 = QPixmap('img6.jpeg')
+        self.label6 = QLabel()
+        self.label6.setPixmap(self.img6)
+
 
         #Ajout des deux boutons de validations
-        self.bt1 = QPushButton("continuer la recherche")
-        self.bt2 = QPushButton("soumettre le visage final")
+        self.bt1 = QPushButton("Continuer la recherche")
+        self.bt1.setFixedSize(200, 30)
+        self.bt2 = QPushButton("Soumettre le visage final")
+        self.bt2.setFixedSize(200, 30)
 
         # Création de grille pour la mise en page
         self.fen = QGridLayout()
@@ -262,24 +277,31 @@ class FEN3(QWidget):
         self.btn_selection2 = customButton()
         self.btn_selection3 = customButton()
         self.btn_selection4 = customButton()
+        self.btn_selection5 = customButton()
+        self.btn_selection6 = customButton()
 
         # Placement des widgets dans la grille
         self.fen.addWidget(self.label1, 1, 1, alignment=Qt.AlignCenter)
-        self.fen.addWidget(self.btn_selection1,2,1)
+        self.fen.addWidget(self.btn_selection1,2,1, alignment=Qt.AlignCenter)
         self.fen.addWidget(self.label2, 1, 2, alignment=Qt.AlignCenter)
-        self.fen.addWidget(self.btn_selection2, 2, 2)
-        self.fen.addWidget(self.label3, 3, 1, alignment=Qt.AlignCenter)
-        self.fen.addWidget(self.btn_selection3, 4, 1)
-        self.fen.addWidget(self.label4, 3, 2, alignment=Qt.AlignCenter)
-        self.fen.addWidget(self.btn_selection4, 4, 2)
+        self.fen.addWidget(self.btn_selection2, 2, 2, alignment=Qt.AlignCenter)
+        self.fen.addWidget(self.label3, 1, 3, alignment=Qt.AlignCenter)
+        self.fen.addWidget(self.btn_selection3, 2, 3, alignment=Qt.AlignCenter)
+        self.fen.addWidget(self.label4, 3, 1, alignment=Qt.AlignCenter)
+        self.fen.addWidget(self.btn_selection4, 4, 1, alignment=Qt.AlignCenter)
+        self.fen.addWidget(self.label5, 3, 2, alignment=Qt.AlignCenter)
+        self.fen.addWidget(self.btn_selection5, 4, 2, alignment=Qt.AlignCenter)
+        self.fen.addWidget(self.label6, 3, 3, alignment=Qt.AlignCenter)
+        self.fen.addWidget(self.btn_selection6, 4, 3, alignment=Qt.AlignCenter)
 
-        self.fen.addWidget(QLabel("Sélectionner le ou les deux visages qui ressemble(nt) le plus à votre agresseur"),5,1)
-        self.fen.addWidget(self.bt1, 6, 1)
-        self.fen.addWidget(self.bt2, 6, 2)
+
+        self.fen.addWidget(QLabel("Sélectionnez le ou les deux visages qui ressemble(nt) le plus à votre agresseur"),6,2, alignment=Qt.AlignCenter)
+        self.fen.addWidget(self.bt1, 6, 3, alignment=Qt.AlignRight)
+        self.fen.addWidget(self.bt2, 6, 1, alignment=Qt.AlignLeft)
 
         # Attribution au boutons de validation les evenements correspondants
-        self.bt1.clicked.connect(self.selection1ou2)
-        self.bt2.clicked.connect(self.nextwindow)
+        self.bt1.clicked.connect(self.selection1vs5)
+        self.bt2.clicked.connect(self.selection1_final)
 
         self.resize(900, 600)       # taille
         self.move(100, 100)         # position
@@ -307,9 +329,11 @@ class FEN3(QWidget):
         list = [self.btn_selection1, self.btn_selection2, self.btn_selection3, self.btn_selection4]
         list_selection=[]
         for i in range (len (list)) :
-            if list[i].selected==True :
-                list_selection.append(img[i])#avec img[] le tableau d'image encodées envoyées à l'initial
 
+            if list[i].isChecked() :
+                #list_selection.append(img[i])#avec img[] le tableau d'image encodées envoyées à l'initial
+                list_selection=[1] #permet juste que ca compile
+                print("ça passe par là")
 
         #   appel algo génétique (tab image choisies)
         new_img = algo.new_img_generator(list_selection)
@@ -331,26 +355,50 @@ class FEN3(QWidget):
 
     #   fermeture de l'ancienne
         self.close()
-    def selection1ou2(self):
+    def selection1vs5(self):
         """Verification du nombre d'images selectionnees
-        Il doit etre egal à 1 ou 2
+        Il doit etre egal entre 1 et 5 inclu
         Si nombre reglementaire, renvoie à la fonction nextimg
         Sinon affiche un message d'erreur
         """
-        list=[self.btn_selection1,self.btn_selection2,self.btn_selection3, self.btn_selection4]
+        list=[self.btn_selection1,self.btn_selection2,self.btn_selection3, self.btn_selection4,self.btn_selection5,self.btn_selection6]
         cnt = 0
         for btn in list:
-            if btn.selected==True :
+            if btn.isChecked():
                 cnt=cnt+1
-        if cnt==1 or cnt==2 :
+        if cnt!=0 and cnt!=6 :
             self.nextimg()
         else:
-            msg = QMessageBox(main_window)
-            msg.setWindowTitle("erreur")
-            msg.setText("Veuillez sélectionner un ou deux visages")
+            msg = QMessageBox()
+            msg.setWindowTitle("Erreur")
+            msg.setText("Veuillez sélectionner au moins un visage et au plus cinq")
             msg.exec_()
 
-    def nextwindow(self):
+    def selection1_final(self):
+        """Verification du nombre d'images selectionnees
+        Il doit etre egal à 1 pour valider
+        Si nombre reglementaire, renvoie à la fonction nextwindow
+        Sinon affiche un message d'erreur
+        """
+        list=[self.btn_selection1,self.btn_selection2,self.btn_selection3, self.btn_selection4,self.btn_selection5,self.btn_selection6]
+        list = np.array(list)
+        cnt = 0
+        btn_selected = 0
+        for btn in list:
+            if btn.isChecked():
+                cnt=cnt+1
+                btn_selected = int(np.where(list == btn)[0]+1) #quel numéro d'image c'était ?
+                name = "img" + str(btn_selected)
+                img_selected = getattr(self, name) #image correspondant a la photo choisie
+
+        if cnt==1 :
+            self.nextwindow(img_selected)
+        else:
+            msg = QMessageBox()
+            msg.setWindowTitle("Erreur")
+            msg.setText("Veuillez sélectionner un seul visage pour valider")
+            msg.exec_()
+    def nextwindow(self,img):
         """Renvoie sur la fenetre suivante
         Sauvegarde le choix final
         """
@@ -358,19 +406,20 @@ class FEN3(QWidget):
         # msg.setWindowTitle("Etes vous sur(e) de votre choix?")
         # msg.setText("Souhaitez vous valider votre choix?")
         # msg.exec_()
-        self.fen = FEN4()
+
+        self.fen = FEN4(img) #prend en paramètres l'image choisie
         self.fen.show()
         self.close()
 
 
 class FEN4(QMainWindow):
-    def __init__(self):
+    def __init__(self, image):
         super().__init__()
 
         # Créer les widgets pour l'interface graphique
         self.label = QLabel("Vous confirmez que ce portrait robot correspond le mieux à votre agresseur :")
         self.image_label = QLabel()
-        self.image_pixmap = QPixmap("img1.jpg")
+        self.image_pixmap = image
         self.image_label.setPixmap(self.image_pixmap.scaledToWidth(400))
         self.label2 = QLabel("Merci de réindiquer votre nom et prénom afin de vérifier votre identité.")
         self.text_edit = QTextEdit()
@@ -415,8 +464,26 @@ class FEN4(QMainWindow):
             textobject.textLine(line)
         c.drawText(textobject)
 
+        # Sauter une page
+        c.showPage()
+
+        # Titre de la seconde page
+        c.setFontSize(20)
+        c.drawString(1 * inch, 10 * inch, "Portrait robot de l'agresseur")
+
+        # Convertit l'image QPixmap en PIL Image
+        qimage = self.image_pixmap.toImage()
+        # Sauvegarde de l'image dans le directory
+        qimage.save("./img_choisie.png", "PNG", -1)
+        # Dessine l'image dans le pdf
+        c.drawInlineImage("./img_choisie.png", 80, 250, height=270, width=480)
         # Enregistrer le PDF et fermer le canvas
         c.save()
+
+        # Supprime l'image du directory
+        os.remove("./img_choisie.png")
+
+
 
 
 if __name__ == "__main__":
