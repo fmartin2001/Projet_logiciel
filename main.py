@@ -169,10 +169,10 @@ class FEN2(QWidget):
 
         layout = QGridLayout()
         # Qt.AlignVCenter
-        layout.addWidget(label1, 1, 1)
+        layout.addWidget(label1, 4, 1)
         layout.addWidget(label2, 2, 1)
         layout.addWidget(label3, 3, 1)
-        layout.addWidget(label4, 4, 1)
+        layout.addWidget(label4, 1, 1)
         layout.addWidget(self.nose, 1, 2)
         layout.addWidget(self.hair_combo, 2, 2)
         layout.addWidget(self.sex_combo, 3, 2)
@@ -438,10 +438,10 @@ class FEN4(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     #win = FEN1()
-    window = FEN3()
+    #window = FEN3()
     #win.show()
-    window.show()
+    #window.show()
 
-    #main_window = FEN1()
-    #main_window.show()
+    main_window = FEN1()
+    main_window.show()
     sys.exit(app.exec_())
