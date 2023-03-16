@@ -1,7 +1,7 @@
 import sys
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QIntValidator, QFont
+from PyQt5.QtGui import QPixmap, QIntValidator, QFont, QIcon
 from PyQt5.QtWidgets import QLabel, QApplication, QLineEdit, QWidget, QMessageBox, QFormLayout, QPushButton, \
     QGridLayout, QComboBox
 from PyQt5.QtWidgets import QTextEdit, QMainWindow, QVBoxLayout
@@ -10,6 +10,10 @@ from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
 import numpy as np
 import algo_gen as algo
+import get_data as get
+from PIL import Image
+import matplotlib.image as mat_im
+from tensorflow.keras.models import load_model
 
 
 class customButton(QPushButton):
@@ -34,6 +38,33 @@ class customButton(QPushButton):
         else :
             self.setText("sélectionner")
             self.selected = False
+
+class FEN0(QWidget):
+
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('Projet')
+        # Créer les widgets pour l'interface graphique
+        self.label = QLabel("Bienvenue dans un générateur de portrait robot ! Nous vous prions de répondre le plus honnêtement possible afin de faire un protrait robot de votre agresseur le plus représentatif possible")
+        self.image_label = QLabel()
+        self.image_pixmap = QPixmap("logo.jpg")
+        self.image_label.setPixmap(self.image_pixmap.scaledToWidth(400))
+        button = QPushButton("Démarrer",self)
+        self.nextfen = FEN1()
+        button.clicked.connect(self.nextwindow2)
+
+        # Créer un layout vertical pour contenir les widgets
+        layout = QVBoxLayout()
+        layout.addWidget(self.label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.image_label, alignment=Qt.AlignCenter)
+        layout.addWidget(button, alignment=Qt.AlignCenter)
+        self.setLayout(layout)
+        self.move(80, 80)  # position de la fenetre
+        self.setWindowIcon(QIcon('logo.jpg'))
+
+    def nextwindow2(self):
+        self.nextfen.show()
+        self.close()
 class FEN1(QWidget):
     """Création de la fenetre 1
             Cette fenetre sert à rentrer et sauvegarder les informations de l'utilisateur
@@ -80,7 +111,7 @@ class FEN1(QWidget):
         self.move(100, 100)# position de la fenetre
         self.setLayout(flo)# affichage de la grille
         self.setWindowTitle("Coordonnees utilisateur")
-        # self.setWindowIcon(QtGui.QIcon('icon.png'))
+        self.setWindowIcon(QIcon('logo.jpg'))
 
         # rattachement du bouton "soumettre à l'évenement "changer de fenetre" (apres avoir vérifier si les champs n'étaient pas vides)
         self.btn.clicked.connect(self.rempli)
@@ -173,12 +204,13 @@ class FEN2(QWidget):
         layout.addWidget(self.lunettes, 4, 2)
         layout.addWidget(button, 5, 2)
         self.setLayout(layout)
+        self.setWindowIcon(QIcon('logo.jpg'))
 
     def submit(self):
         nose = self.nose.currentText()
         hair_color = self.hair_combo.currentText()
         sex = self.sex_combo.currentText()
-        lunettes = self.lunettes.currentText()
+        Lunettes = self.lunettes.currentText()
         print(f'Taille du nez : {nose}, Couleur des cheveux : {hair_color}, Sexe : {sex}, Avait-il des lunettes ? : {Lunettes}')
 
 
@@ -195,23 +227,25 @@ class FEN3(QWidget):
     """
     def __init__(self, parent=None):
         super().__init__(parent)
+        #self.cnt_ouverture
         self.initUI()
 
     def initUI(self):
         # Appelle la fonction qui prend les images générées par fannie et natacha il faut voir si c'est la même la premiere fois et les fois suivante?
-        #self.gener_new_img()
+
+        self.gen_premieres_img()
 
         # Une à une on prend les image et on les place dans un label
-        self.img1 = QPixmap('img1.jpg')
+        self.img1 = QPixmap('img1.png')
         self.label1 = QLabel()
         self.label1.setPixmap(self.img1)
-        self.img2 = QPixmap('img2.jpg')
+        self.img2 = QPixmap('img2.png')
         self.label2 = QLabel()
         self.label2.setPixmap(self.img2)
-        self.img3 = QPixmap('img3.jpg')
+        self.img3 = QPixmap('img3.png')
         self.label3 = QLabel()
         self.label3.setPixmap(self.img3)
-        self.img4 = QPixmap('img4.jpg')
+        self.img4 = QPixmap('img4.png')
         self.label4 = QLabel()
         self.label4.setPixmap(self.img4)
 
@@ -247,12 +281,21 @@ class FEN3(QWidget):
         self.bt1.clicked.connect(self.selection1ou2)
         self.bt2.clicked.connect(self.nextwindow)
 
-        self.resize(600, 600)       # taille
+        self.resize(900, 600)       # taille
         self.move(100, 100)         # position
         self.setLayout(self.fen)
         self.setWindowTitle("choix du portrait")
-        # self.setWindowIcon(QtGui.QIcon('icon.png'))
+        self.setWindowIcon(QIcon('logo.jpg'))
 
+    def gen_premieres_img(self):
+        img_encoded_list = np.load('./Data/20_encoded_img.npy')
+        autoencoder=load_model("./Model/autoencoder")
+        img_list=autoencoder.decoder.predict(img_encoded_list)
+
+        mat_im.imsave("img1.png", img_list[0])
+        mat_im.imsave("img2.png", img_list[1])
+        mat_im.imsave("img3.png", img_list[2])
+        mat_im.imsave("img4.png", img_list[3])
 
     def nextimg(self):
         """Reste sur la meme fenetre en changeant les images
@@ -260,27 +303,28 @@ class FEN3(QWidget):
         Actualise img1.jpg, img2.jpg, img3.jpg, img4.jpg
         Relance la fenetre
         """
+        img = np.load('./Data/20_encoded_img.npy')
         list = [self.btn_selection1, self.btn_selection2, self.btn_selection3, self.btn_selection4]
         list_selection=[]
         for i in range (len (list)) :
             if list[i].selected==True :
-                #list_selection.append(img[i])#avec img[] le tableau d'image encodées envoyées à l'initial
-                list_selection=[1] #permet juste que ca compile
-                print("ça passe par là")
+                list_selection.append(img[i])#avec img[] le tableau d'image encodées envoyées à l'initial
+
 
         #   appel algo génétique (tab image choisies)
-        # new_img = algo.new_img_generator(list_selection)
+        new_img = algo.new_img_generator(list_selection)
     #   génération des 4 images
         from PIL import Image
 
-        # img1 = Image.fromarray(new_img[0])
-        # img1.save("img1.jpg")
-        # img2 = Image.fromarray(new_img[1])
-        # img2.save("img2.jpg")
-        # img3 = Image.fromarray(new_img[2])
-        # img3.save("img3.jpg")
-        # img4 = Image.fromarray(new_img[3])
-        # img4.save("img4.jpg")
+        img1 = Image.fromarray(new_img[0])
+        img1.save("img1.jpg")
+        img2 = Image.fromarray(new_img[1])
+        img2.save("img2.jpg")
+        img3 = Image.fromarray(new_img[2])
+        img3.save("img3.jpg")
+        img4 = Image.fromarray(new_img[3])
+        img4.save("img4.jpg")
+
     #   ouverture de la nouvelle fenetre
         self.newfen=FEN3()
         self.newfen.show()
@@ -326,7 +370,7 @@ class FEN4(QMainWindow):
         # Créer les widgets pour l'interface graphique
         self.label = QLabel("Vous confirmez que ce portrait robot correspond le mieux à votre agresseur :")
         self.image_label = QLabel()
-        self.image_pixmap = QPixmap("/home/cbuton/Documents/INSA/4BIM/S2/ProjetDevLogi/Projet_logiciel/img1.jpg")
+        self.image_pixmap = QPixmap("img1.jpg")
         self.image_label.setPixmap(self.image_pixmap.scaledToWidth(400))
         self.label2 = QLabel("Merci de réindiquer votre nom et prénom afin de vérifier votre identité.")
         self.text_edit = QTextEdit()
@@ -344,6 +388,8 @@ class FEN4(QMainWindow):
         central_widget = QWidget(self)
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
+        self.setWindowTitle("Recapitulatif de la requete")
+        self.setWindowIcon(QIcon('logo.jpg'))
 
         # Associer un signal à l'événement "clicked" du bouton
         self.button.clicked.connect(self.save_to_pdf)
@@ -360,7 +406,7 @@ class FEN4(QMainWindow):
         c.drawString(1 * inch, 10 * inch, "Fiche récapitulative")
 
         # Dessiner l'image
-        c.drawInlineImage("/home/cbuton/Documents/INSA/4BIM/S2/ProjetDevLogi/Projet_logiciel/img1.jpg", 80, 250, height=270, width=480)
+        c.drawInlineImage("img1.jpg", 80, 250, height=270, width=480)
 
         # Dessiner le texte
         c.setFontSize(12)
@@ -376,10 +422,10 @@ class FEN4(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     #win = FEN1()
-    #window = FEN3()
+    window = FEN3()
     #win.show()
     #window.show()
 
-    main_window = FEN1()
+    main_window = FEN3()
     main_window.show()
     sys.exit(app.exec_())
