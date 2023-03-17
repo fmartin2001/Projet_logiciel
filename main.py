@@ -73,7 +73,7 @@ class FEN1(QWidget):
 
         # bouton "soumettre" pour passer à la fenetre suivante et sauvegarder les données entrées
         self.btn = QPushButton()
-        self.btn.setText("Soumettre")
+        self.btn.setText("soumettre")
 
         # Grille de mise en page
         flo = QFormLayout()
@@ -120,7 +120,7 @@ class FEN1(QWidget):
 
         # changement de fenetre
         self.nextfen.show()
-        self.close() #or close
+        self.close()
 
 
 class FEN2(QWidget):
@@ -131,7 +131,6 @@ class FEN2(QWidget):
 
     def initUI(self):
         self.nextfen = FEN3()
-
         self.setWindowTitle('Caracteristiques')
         self.setGeometry(320, 320, 320, 320)
 
@@ -168,10 +167,6 @@ class FEN2(QWidget):
         # button.move(100, 180)
         button.clicked.connect(self.nextwindow2)
 
-        # Bouton pour retourner en arrière sur la fenêtre des coordonnées utilisateur
-        self.bouton_retour = QPushButton('Retour')
-        self.bouton_retour.clicked.connect(self.backwindow)
-
         layout = QGridLayout()
         # Qt.AlignVCenter
         layout.addWidget(label1, 4, 1)
@@ -183,7 +178,6 @@ class FEN2(QWidget):
         layout.addWidget(self.sex_combo, 3, 2)
         layout.addWidget(self.lunettes, 4, 2)
         layout.addWidget(button, 5, 2)
-        layout.addWidget(self.bouton_retour, 6, 2)
         self.setLayout(layout)
 
     def submit(self):
@@ -191,20 +185,12 @@ class FEN2(QWidget):
         hair_color = self.hair_combo.currentText()
         sex = self.sex_combo.currentText()
         lunettes = self.lunettes.currentText()
-        print(f'Taille du nez : {nose}, Couleur des cheveux : {hair_color}, Sexe : {sex}, Avait-il des lunettes ? : {lunettes}')
+        print(f'Taille du nez : {nose}, Couleur des cheveux : {hair_color}, Sexe : {sex}, Avait-il des lunettes ? : {Lunettes}')
 
 
     def nextwindow2(self):
         self.nextfen.show()
         self.close()
-
-    def backwindow(self):
-        self.close()
-        first_window = FEN1() #ça marche pas
-        first_window.show()
-        print("je passe par back window")
-
-
 
 class FEN3(QWidget):
     """Creation de la fenetre 3
