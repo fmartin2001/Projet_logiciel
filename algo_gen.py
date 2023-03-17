@@ -1,5 +1,5 @@
 import numpy as np
-
+import main
 
 # Mutation function
 def mutation(encoded_img_list, proba=0.5):
@@ -65,12 +65,12 @@ def new_img_generator(encoded_img_selected):
     else :
         print("Np array should be of length 1 or 2")
 
-#def algo_gen(encoded_img_selected) :
+def algo_gen(encoded_img_selected) :
     # selectionner des caractéristiques de départ pour réduire les données
     # récupérer les img encodées correspondantes
     # recupérer 4 images encodées parmi elles
-    #
-
+    app = QApplication(sys.argv)
+    main.ouvrir_fen3(encoded_img_selected)
     # while cnt < 30 and nb_max_de_suite < 5:
         # les afficher
         # utilisateur choisit : on récupère lesquelles il choisit (1 ou 2)

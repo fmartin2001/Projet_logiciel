@@ -222,7 +222,15 @@ class FEN2(QWidget):
 
 
     def nextwindow2(self):
+<<<<<<< Updated upstream
         self.nextfen.show()
+=======
+        # self.nextfen.show()
+        img = np.load('./Data/20_encoded_img.npy')
+        obj=algo_gen(img[0:6])
+        print("hihihi")
+        obj.boucle()
+>>>>>>> Stashed changes
         self.close()
 
 class FEN3(QWidget):
@@ -484,7 +492,23 @@ class FEN4(QMainWindow):
         os.remove("./img_choisie.png")
 
 
-
+class algo_gen():
+    def __init__(self, image):
+        # selectionner des caractéristiques de départ pour réduire les données
+        # récupérer les img encodées correspondantes
+        # recupérer 4 images encodées parmi elles
+        self.img=image
+        self.win = FEN3(image)
+    def boucle(self) :
+        self.win.show()
+        # while cnt < 30 and nb_max_de_suite < 5:
+        # les afficher
+        # utilisateur choisit : on récupère lesquelles il choisit (1 ou 2)
+        # list_img_choisies.append(identifiant de l'img)
+        # cnt +=1
+        # if list_img_choisie[-1] == list_img_choisie[-2]: #si la dernière est la même que l'avant dernière
+        # nb_max_de_suite += 1
+        # new_img_generator(encoded_img_selected)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -493,6 +517,12 @@ if __name__ == "__main__":
     #win.show()
     #window.show()
 
+<<<<<<< Updated upstream
     main_window = FEN3()
+=======
+    main_window = FEN2()
+>>>>>>> Stashed changes
     main_window.show()
     sys.exit(app.exec_())
+
+
