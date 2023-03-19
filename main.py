@@ -19,6 +19,7 @@ from tensorflow.keras.models import load_model
 cnt = 1
 img_recurrente = []
 autoencoder = load_model("./Model/autoencoder")
+banque_img = np.load('./Data/20_encoded_img.npy')
 
 
 class customButton(QPushButton):
@@ -42,7 +43,7 @@ class customButton(QPushButton):
 
     def on_click(self):
         if self.isChecked():
-            #self.setText("Choisi")
+            # self.setText("Choisi")
             check = QIcon('check.png')
             self.setIcon(check)
             self.setStyleSheet("background-color: #008000")
@@ -58,7 +59,8 @@ class FEN0(QWidget):
         super().__init__()
         self.setWindowTitle('Projet')
         # Créer les widgets pour l'interface graphique
-        self.label = QLabel("Bienvenue dans un générateur de portrait robot ! Nous vous prions de répondre le plus honnêtement possible afin de faire un protrait robot de votre agresseur le plus représentatif possible")
+        self.label = QLabel(
+            "Bienvenue dans un générateur de portrait robot ! Nous vous prions de répondre le plus honnêtement possible afin de faire un protrait robot de votre agresseur le plus représentatif possible")
         self.image_label = QLabel()
         self.image_pixmap = QPixmap("logo.jpg")
         self.image_label.setPixmap(self.image_pixmap.scaledToWidth(400))
@@ -160,7 +162,7 @@ class FEN1(QWidget):
 
         # changement de fenetre
         self.nextfen.show()
-        self.close() #or close
+        self.close()  # or close
 
 
 class FEN2(QWidget):
@@ -229,21 +231,21 @@ class FEN2(QWidget):
         hair_color = self.hair_combo.currentText()
         sex = self.sex_combo.currentText()
         lunettes = self.lunettes.currentText()
-        print(f'Taille du nez : {nose}, Couleur des cheveux : {hair_color}, Sexe : {sex}, Avait-il des lunettes ? : {lunettes}')
-
+        print(
+            f'Taille du nez : {nose}, Couleur des cheveux : {hair_color}, Sexe : {sex}, Avait-il des lunettes ? : {lunettes}')
 
     def nextwindow2(self):
-        img = np.load('./Data/20_encoded_img.npy')
-        self.nextfen = FEN3(img)
+        global banque_img
+        self.nextfen = FEN3(banque_img)
         self.nextfen.show()
         self.close()
 
     def backwindow(self):
         self.close()
-        first_window = FEN1() #ça marche pas
-        first_window.show()
-        print("je passe par back window")
+        # ça marche (je sais pas pourquoi mais faut les mettre en attributs)
 
+        self.first_window = FEN1()
+        self.first_window.show()
 
 
 class FEN3(QWidget):
@@ -363,7 +365,7 @@ class FEN3(QWidget):
             self.algo_gen()
         elif len(img_recurrente) >= 5:
             self.nextwindow(img_recurrente[4])
-        else :
+        else:
             msg = QMessageBox()
             msg.setWindowTitle("Erreur")
             msg.setText("Il est temps de faire un choix, veuillez sélectionner 1 visage et cliquer sur valider")
@@ -385,7 +387,15 @@ class FEN3(QWidget):
             if list[i].isChecked():
                 img_choisie.append(self.img_encod[i])
                 print("ça passe par là")
+        # si une seule selectionnée pour augmenter diversité des choix on introduit un autre visage random
+        # (on peut modifier mais ca simplifie le code de la suite)
+        if len(img_choisie) == 1:
+            rand = int(np.random.random() * 20)
+            global banque_img
+            img_choisie.append(banque_img[rand])
+
         img_choisie = np.asarray(img_choisie)
+        print(len(img_choisie))
         #   procede aux mutations et crossing over
         new_img = algo.new_img_generator(img_choisie)
         new_img = np.asarray(new_img)
