@@ -9,7 +9,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
 import numpy as np
-import algo_gen as algo
+import algo_genetic as algo
 import get_data as get
 from PIL import Image
 import matplotlib.image as mat_im
