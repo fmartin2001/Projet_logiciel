@@ -368,6 +368,7 @@ class FEN3(QWidget):
         # msg.setWindowTitle("Etes vous sur(e) de votre choix?")
         # msg.setText("Souhaitez vous valider votre choix?")
         # msg.exec_()
+        #lol
 
         self.fen = FEN4(img, self.nom, self.prenom, self.date) #prend en paramètres l'image choisie
         self.fen.show()
