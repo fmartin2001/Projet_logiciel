@@ -65,6 +65,7 @@ class FEN0(QWidget):
     Methods :
          nextwindow2(self) : passe à la fenetre suivante (nextfen)
     """
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Projet')
@@ -120,7 +121,6 @@ class FEN1(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.nextfen = FEN2()  # sa fenetre suivante est la fenetre 2
 
         # permet de rentrer le nom
         self.e1.setMaxLength(20)
@@ -135,6 +135,8 @@ class FEN1(QWidget):
         # permet de rentrer la date de naissance
         self.e3.setValidator(QIntValidator())
         self.e3.setInputMask("99/99/9999")
+
+        self.nextfen = FEN2(self.e1, self.e2, self.e3)  # sa fenetre suivante est la fenetre 2
 
         # bouton "soumettre" pour passer à la fenetre suivante et sauvegarder les données entrées
         self.btn.setText("Soumettre")
@@ -170,19 +172,8 @@ class FEN1(QWidget):
 
     def nextwindow(self):
         """
-        Enregistre les infos (nom, prenom, date) dans un fichier
         Ferme la fenetre 1 puis ouvre la fenetre 2
-
         """
-        fichier = open("user.txt", "a")
-        fichier.write(self.e1.text())
-        fichier.write("\n")
-        fichier.write(self.e2.text())
-        fichier.write("\n")
-        fichier.write(self.e3.text())
-        fichier.write("\n")
-        fichier.close()
-
         # changement de fenetre
         self.nextfen.show()
         self.close()  # or close
@@ -208,8 +199,12 @@ class FEN2(QWidget):
              submit(self) : sauvegarde les caractéristiques choisies par l'utilisateur
 
         """
-    def __init__(self, parent=None):
+
+    def __init__(self, nom, prenom, date, parent=None):
         super().__init__(parent)
+        self.nom = nom
+        self.prenom = prenom
+        self.date = date
         self.initUI()
 
     def initUI(self):
@@ -274,7 +269,7 @@ class FEN2(QWidget):
 
     def nextwindow2(self):
         global banque_img
-        self.nextfen = FEN3(banque_img)
+        self.nextfen = FEN3(self.nom,self.prenom,self.date,banque_img)
         self.nextfen.show()
         self.close()
 
@@ -318,11 +313,13 @@ class FEN3(QWidget):
                 algo_gen.py
             """
 
-
-    def __init__(self, img):
+    def __init__(self,nom,prenom,date, img):
         super().__init__()
         self.img_encod = img
         self.initUI()
+        self.nom=nom
+        self.prenom=prenom
+        self.date=date
 
     def initUI(self):
 
@@ -462,7 +459,7 @@ class FEN3(QWidget):
         new_img = np.asarray(new_img)
         print("hey")
         #   ouverture de la nouvelle fenetre == nouveau calcul du cout
-        self.newfen = FEN3(new_img)
+        self.newfen = FEN3(self.nom,self.prenom,self.date,new_img)
         self.newfen.show()
 
         #   fermeture de l'ancienne
@@ -523,7 +520,7 @@ class FEN3(QWidget):
         # msg.setText("Souhaitez vous valider votre choix?")
         # msg.exec_()
 
-        self.fen = FEN4(img)  # prend en paramètres l'image choisie
+        self.fen = FEN4(self.nom,self.prenom,self.date,img)  # prend en paramètres l'image choisie
         self.fen.show()
         self.close()
 
@@ -546,16 +543,22 @@ class FEN4(QMainWindow):
              save_to_pdf (self) : genere un pdf de 2 pages qui permettent d'enregistrer le portrait robot avec et sans l'identité de la victime
 
         """
-    def __init__(self, image):
+    def __init__(self, nom, prenom, date, image):
         super().__init__()
+
+        self.nom = nom
+        self.prenom = prenom
+        self.date = date
 
         # Créer les widgets pour l'interface graphique
         self.label = QLabel("Vous confirmez que ce portrait robot correspond le mieux à votre agresseur :")
         self.image_label = QLabel()
         self.image_pixmap = image
         self.image_label.setPixmap(self.image_pixmap.scaledToWidth(400))
-        self.label2 = QLabel("Merci de réindiquer votre nom et prénom afin de vérifier votre identité.")
+        self.label2 = QLabel("Merci de réindiquer votre nom puis prénom afin de vérifier votre identité.")
+
         self.text_edit = QTextEdit()
+        self.text_edit.setMaximumSize(150, 25)
         self.button = QPushButton("Sauvegarder")
 
         # Créer un layout vertical pour contenir les widgets
@@ -563,59 +566,79 @@ class FEN4(QMainWindow):
         layout.addWidget(self.label, alignment=Qt.AlignCenter)
         layout.addWidget(self.image_label, alignment=Qt.AlignCenter)
         layout.addWidget(self.label2, alignment=Qt.AlignCenter)
-        layout.addWidget(self.text_edit)
+        layout.addWidget(self.text_edit, alignment=Qt.AlignCenter)
         layout.addWidget(self.button, alignment=Qt.AlignCenter)
 
         # Créer un widget pour contenir le layout
         central_widget = QWidget(self)
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
-        self.setWindowTitle("Recapitulatif de la requete")
-        self.setWindowIcon(QIcon('logo.jpg'))
 
         # Associer un signal à l'événement "clicked" du bouton
         self.button.clicked.connect(self.save_to_pdf)
 
     def save_to_pdf(self):
         # Obtenir le contenu du QTextEdit
-        text = self.text_edit.toPlainText()
+        verif = self.text_edit.toPlainText()
+        text_to_verify = self.nom.text() + " " + self.prenom.text()
 
-        # Créer un objet canvas pour générer le PDF
-        c = canvas.Canvas("mon_document.pdf", pagesize=letter)
+        # Boolean pour savoir si c'est bon
+        correct = self.verification(verif, text_to_verify)
 
-        # Dessiner le titre
-        c.setFontSize(20)
-        c.drawString(1 * inch, 10 * inch, "Fiche récapitulative")
+        if correct == True:
 
-        # Convertit l'image QPixmap en PIL Image
-        qimage = self.image_pixmap.toImage()
-        # Sauvegarde de l'image dans le directory
-        qimage.save("./img_choisie.png", "PNG", -1)
-        # Dessiner l'image
-        c.drawInlineImage("img1.jpg", 80, 250, height=270, width=480)
+            # Données à mettre dans le pdf
+            text = self.prenom.text() + " " + self.nom.text() + " né(e) le " + self.date.text()
 
-        # Dessiner le texte
-        c.setFontSize(12)
-        textobject = c.beginText(1 * inch, 7.5 * inch)
-        for line in text.split('\n'):
-            textobject.textLine(line)
-        c.drawText(textobject)
+            # Créer un objet canvas pour générer le PDF
+            c = canvas.Canvas(f"User/{self.prenom.text()}_{self.nom.text()}.pdf", pagesize=letter)
 
-        # Sauter une page
-        c.showPage()
+            # Dessiner le titre
+            c.setFontSize(20)
+            c.drawString(1 * inch, 10 * inch, "Fiche récapitulative de la victime")
 
-        # Titre de la seconde page
-        c.setFontSize(20)
-        c.drawString(1 * inch, 10 * inch, "Portrait robot de l'agresseur")
+            # Dessiner le texte
+            c.setFontSize(12)
+            textobject = c.beginText(1 * inch, 7.5 * inch)
+            for line in text.split('\n'):
+                textobject.textLine(line)
+            c.drawText(textobject)
 
-        # Dessine l'image dans le pdf
-        c.drawInlineImage("./img_choisie.png", 80, 250, height=270, width=480)
-        # Enregistrer le PDF et fermer le canvas
-        c.save()
+            # Sauter une page
+            c.showPage()
 
-        # Supprime l'image du directory
-        os.remove("./img_choisie.png")
-        self.close()
+            # Titre de la seconde page
+            c.setFontSize(20)
+            c.drawString(1 * inch, 10 * inch, "Portrait robot de l'agresseur")
+
+            # Convertit l'image QPixmap en PIL Image
+            qimage = self.image_pixmap.toImage()
+            # Sauvegarde de l'image dans le directory
+            qimage.save("./img_choisie.png", "PNG", -1)
+            # Dessine l'image dans le pdf
+            c.drawInlineImage("./img_choisie.png", 80, 250, height=270, width=480)
+            # Enregistrer le PDF et fermer le canvas
+            c.save()
+
+            # Supprime l'image du directory
+            os.remove("./img_choisie.png")
+
+            msg = QMessageBox()
+            msg.setWindowTitle("Terminé")
+            msg.setText("Informations enregistrées dans le dossier User. Vous allez quitter le logiciel.")
+            msg.exec_()
+
+            self.close()
+
+    def verification(self, verif_, text_):
+        if verif_ != text_:
+            msg = QMessageBox()
+            msg.setWindowTitle("Erreur")
+            msg.setText("Les informations ne correspondent pas. Veuillez réessayer.")
+            msg.exec_()
+            return False
+        else:
+            return True
 
 
 if __name__ == "__main__":
@@ -625,6 +648,6 @@ if __name__ == "__main__":
     # win.show()
     # window.show()
     # liste_img_encoded = np.load("Data/20_encoded_img.npy")
-    main_window = FEN1()
+    main_window = FEN0()
     main_window.show()
     sys.exit(app.exec_())
