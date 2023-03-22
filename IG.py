@@ -16,7 +16,7 @@ import matplotlib.image as mat_im
 from tensorflow.keras.models import load_model
 from datetime import datetime
 
-# variables globales : compteur pour l'algo gen et les images choisies
+#variables globales : compteur pour l'algo gen et les images choisies
 cnt = 1
 img_recurrente = []
 autoencoder = load_model("./Model/autoencoder")
@@ -210,32 +210,37 @@ class FEN2(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle('Caracteristiques')
+        self.setWindowTitle('Caractéristiques')
         self.setGeometry(320, 320, 320, 320)
 
         # Labels
-        label1 = QLabel('Avait-il/elle un gros nez?:', self)
-        label2 = QLabel('Couleur des cheveux:', self)
-        label3 = QLabel('Sexe:', self)
-        label4 = QLabel('Avait-il/elle des lunettes ?', self)
+        label1 = QLabel('Sexe:', self)
+        label2 = QLabel('Couleur de cheveux:', self)
+        label3 = QLabel('Pilosité faciale:', self)
+        label4 = QLabel('Avait-il/elle des lunettes?', self)
+        label5 = QLabel('Avait-il/elle un gros nez?:', self)
 
         # Combo boxes
-        nose = ['Oui', 'Non']
-        hair_colors = ['Brun', 'Gris', 'Blond', 'Noir']
+        nose = ['Oui', 'Non','Je ne sais pas']
+        hair_colors = ['Brun', 'Gris', 'Blond', 'Noir', 'Chauve', 'Je ne sais pas']
+        pilosite=['Barbe', 'Moustache', 'Ni barbe,ni moustache' ,'Je ne sais pas']
         sex = ['Homme', 'Femme', 'Je ne sais pas']
-        lunettes = ['Oui', 'Non']
-        self.nose = QComboBox(self)
-        self.nose.addItems(nose)
+        lunettes = ['Oui', 'Non', 'Je ne sais pas']
+
+        self.sex_combo = QComboBox(self)
+        self.sex_combo.addItems(sex)
         # self.eye_combo.move(140, 20)
         self.hair_combo = QComboBox(self)
         self.hair_combo.addItems(hair_colors)
         # self.hair_combo.move(140, 60)
-        self.sex_combo = QComboBox(self)
-        self.sex_combo.addItems(sex)
+        self.pilo_combo = QComboBox(self)
+        self.pilo_combo.addItems(pilosite)
         # self.sex_combo.move(140, 100)
         self.lunettes = QComboBox(self)
         self.lunettes.addItems(lunettes)
         # self.skin_combo.move(140, 140)
+        self.nose = QComboBox(self)
+        self.nose.addItems(nose)
 
         # Button
         button = QPushButton('Soumettre', self)
@@ -248,16 +253,18 @@ class FEN2(QWidget):
 
         layout = QGridLayout()
         # Qt.AlignVCenter
-        layout.addWidget(label1, 4, 1)
+        layout.addWidget(label1, 1, 1)
         layout.addWidget(label2, 2, 1)
         layout.addWidget(label3, 3, 1)
-        layout.addWidget(label4, 1, 1)
-        layout.addWidget(self.nose, 1, 2)
+        layout.addWidget(label4, 4, 1)
+        layout.addWidget(label5, 5, 1)
+        layout.addWidget(self.sex_combo, 1, 2)
         layout.addWidget(self.hair_combo, 2, 2)
-        layout.addWidget(self.sex_combo, 3, 2)
+        layout.addWidget(self.pilo_combo, 3, 2)
         layout.addWidget(self.lunettes, 4, 2)
-        layout.addWidget(button, 5, 2)
-        layout.addWidget(self.bouton_retour, 6, 2)
+        layout.addWidget(self.nose, 5, 2)
+        layout.addWidget(button, 6, 2)
+        layout.addWidget(self.bouton_retour, 7, 2)
         self.setLayout(layout)
         self.setWindowIcon(QIcon('logo.jpg'))
 
