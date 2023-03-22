@@ -14,6 +14,7 @@ import get_data as get
 from PIL import Image
 import matplotlib.image as mat_im
 from tensorflow.keras.models import load_model
+from datetime import datetime
 
 # variables globales : compteur pour l'algo gen et les images choisies
 cnt = 1
@@ -71,7 +72,8 @@ class FEN0(QWidget):
         self.setWindowTitle('Projet')
         # Créer les widgets pour l'interface graphique
         self.label = QLabel(
-            "Bienvenue dans un générateur de portrait robot ! Nous vous prions de répondre le plus honnêtement possible afin de faire un protrait robot de votre agresseur le plus représentatif possible")
+            "Bienvenue dans un générateur de portrait robot ! Nous vous prions de répondre le plus honnêtement possible afin de faire un protrait robot de votre agresseur le plus représentatif")
+
         self.image_label = QLabel()
         self.image_pixmap = QPixmap("logo.jpg")
         self.image_label.setPixmap(self.image_pixmap.scaledToWidth(400))
@@ -590,6 +592,10 @@ class FEN4(QMainWindow):
             # Données à mettre dans le pdf
             text = self.prenom.text() + " " + self.nom.text() + " né(e) le " + self.date.text()
 
+            #date
+            now = datetime.now()
+            today = now.strftime("%d/%m/%Y %H:%M:%S")
+
             # Créer un objet canvas pour générer le PDF
             c = canvas.Canvas(f"User/{self.prenom.text()}_{self.nom.text()}.pdf", pagesize=letter)
 
@@ -603,6 +609,9 @@ class FEN4(QMainWindow):
             for line in text.split('\n'):
                 textobject.textLine(line)
             c.drawText(textobject)
+
+            # Dessiner la date
+            c.drawString(1 * inch, 8 * inch, today)
 
             # Sauter une page
             c.showPage()
