@@ -7,7 +7,7 @@ python3 -m venv env_robot
 source ./env_robot/bin/activate
 
 pip3 install --upgrade pip
-pip3 install PyQt5 reportlab numpy matplotlib datetime Pillow pandas scikit-learn keras tensorflow
+pip3 install PyQt5 reportlab numpy matplotlib datetime Pillow pandas scikit-learn keras tensorflow --no-cache-dir
 
 echo "[Desktop Entry]
 Version= 1.0
