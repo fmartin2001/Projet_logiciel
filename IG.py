@@ -75,7 +75,7 @@ class FEN0(QWidget):
             "Bienvenue dans un générateur de portrait robot ! Nous vous prions de répondre le plus honnêtement possible afin de faire un protrait robot de votre agresseur le plus représentatif")
 
         self.image_label = QLabel()
-        self.image_pixmap = QPixmap("logo.jpg")
+        self.image_pixmap = QPixmap("logo.png")
         self.image_label.setPixmap(self.image_pixmap.scaledToWidth(400))
         button = QPushButton("Démarrer", self)
         self.nextfen = FEN1()
@@ -335,22 +335,22 @@ class FEN3(QWidget):
         self.gen_premieres_img()
 
         # Une à une on prend les image et on les place dans un label
-        self.img1 = QPixmap('img1.png')
+        self.img1 = QPixmap('Img/img1.png')
         self.label1 = QLabel()
         self.label1.setPixmap(self.img1)
-        self.img2 = QPixmap('img2.png')
+        self.img2 = QPixmap('Img/img2.png')
         self.label2 = QLabel()
         self.label2.setPixmap(self.img2)
-        self.img3 = QPixmap('img3.png')
+        self.img3 = QPixmap('Img/img3.png')
         self.label3 = QLabel()
         self.label3.setPixmap(self.img3)
-        self.img4 = QPixmap('img4.png')
+        self.img4 = QPixmap('Img/img4.png')
         self.label4 = QLabel()
         self.label4.setPixmap(self.img4)
-        self.img5 = QPixmap('img5.png')
+        self.img5 = QPixmap('Img/img5.png')
         self.label5 = QLabel()
         self.label5.setPixmap(self.img5)
-        self.img6 = QPixmap('img6.png')
+        self.img6 = QPixmap('Img/img6.png')
         self.label6 = QLabel()
         self.label6.setPixmap(self.img6)
 
@@ -405,12 +405,12 @@ class FEN3(QWidget):
         global autoencoder
         img_list = autoencoder.decoder.predict(self.img_encod)
 
-        mat_im.imsave("img1.png", img_list[0])
-        mat_im.imsave("img2.png", img_list[1])
-        mat_im.imsave("img3.png", img_list[2])
-        mat_im.imsave("img4.png", img_list[3])
-        mat_im.imsave("img5.png", img_list[4])
-        mat_im.imsave("img6.png", img_list[5])
+        mat_im.imsave("Img/img1.png", img_list[0])
+        mat_im.imsave("Img/img2.png", img_list[1])
+        mat_im.imsave("Img/img3.png", img_list[2])
+        mat_im.imsave("Img/img4.png", img_list[3])
+        mat_im.imsave("Img/img5.png", img_list[4])
+        mat_im.imsave("Img/img6.png", img_list[5])
 
     def nextimg(self):
         global cnt
