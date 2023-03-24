@@ -1,3 +1,4 @@
+
 import numpy as np
 import copy
 
@@ -69,7 +70,6 @@ def new_img_generator(encoded_img_selected):
         res.append(new_img[i])
     for i in range (len(encoded_img_selected)):
         res.append(encoded_img_selected[i])
-
     return res
 
     # if len(encoded_img_selected) ==2:
