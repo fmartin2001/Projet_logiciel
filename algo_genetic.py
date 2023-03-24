@@ -61,19 +61,15 @@ def new_img_generator(encoded_img_selected):
     print("et1")
     new_img, indices = crossing_over(new_img_proposed)
     print("2")
-    other_cross, ind = crossing_over(encoded_img_selected)
-    print("3")
-    res=[]#np.concatenate(new_img, encoded_img_selected,axis=0)
-    nb_modified = min(len(encoded_img_selected), (6 - len(encoded_img_selected)))
-    print(nb_modified)
-    compl=6-nb_modified-len(encoded_img_selected)
+
+    res=[]
+    nb_modified = 6-len(encoded_img_selected)
     print(nb_modified)
     for i in range (nb_modified):
         res.append(new_img[i])
     for i in range (len(encoded_img_selected)):
         res.append(encoded_img_selected[i])
-    for i in range (compl):
-        res.append(other_cross[i])
+
     return res
 
     # if len(encoded_img_selected) ==2:

@@ -9,7 +9,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
 import numpy as np
-import algo_gen as algo
+import algo_genetic as algo
 import get_data as get
 from PIL import Image
 import matplotlib.image as mat_im
@@ -68,10 +68,9 @@ class FEN0(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('Projet')
+        self.setWindowTitle('Portrait-robot')
         # Créer les widgets pour l'interface graphique
-        self.label = QLabel(
-            "Bienvenue dans un générateur de portrait robot ! Nous vous prions de répondre le plus honnêtement possible afin de faire un protrait robot de votre agresseur le plus représentatif possible")
+        self.label = QLabel("Bienvenue dans un générateur de portrait robot ! \nNous vous prions de répondre le plus honnêtement possible afin de faire un protrait robot \nde votre agresseur des plus representatifs. \nLors du choix des visages, nous vous conseillons également de choisir le minimum de propositions. \nVeuillez appuyer sur demarrer quand vous serez prêt.")
         self.image_label = QLabel()
         self.image_pixmap = QPixmap("logo.jpg")
         self.image_label.setPixmap(self.image_pixmap.scaledToWidth(400))
@@ -151,7 +150,7 @@ class FEN1(QWidget):
         self.resize(500, 220)  # taille de la fenetre
         self.move(100, 100)  # position de la fenetre
         self.setLayout(flo)  # affichage de la grille
-        self.setWindowTitle("Coordonnees utilisateur")
+        self.setWindowTitle("Coordonnées utilisateur")
         self.setWindowIcon(QIcon('logo.jpg'))
 
         # rattachement du bouton "soumettre à l'évenement "changer de fenetre" (apres avoir vérifier si les champs n'étaient pas vides)
@@ -212,16 +211,16 @@ class FEN2(QWidget):
         self.setGeometry(320, 320, 320, 320)
 
         # Labels
-        label1 = QLabel('Avait-il/elle un gros nez?:', self)
+        label1 = QLabel('Avait-il/elle un gros nez?', self)
         label2 = QLabel('Couleur des cheveux:', self)
         label3 = QLabel('Sexe:', self)
         label4 = QLabel('Avait-il/elle des lunettes ?', self)
 
         # Combo boxes
-        nose = ['Oui', 'Non']
-        hair_colors = ['Brun', 'Gris', 'Blond', 'Noir']
-        sex = ['Homme', 'Femme', 'Je ne sais pas']
-        lunettes = ['Oui', 'Non']
+        nose = ['Oui', 'Non','Je ne sais pas']
+        hair_colors = ['Brun', 'Gris', 'Blond', 'Noir','Je ne sais pas']
+        sex = ['Homme', 'Femme','Je ne sais pas']
+        lunettes = ['Oui', 'Non','Je ne sais pas']
         self.nose = QComboBox(self)
         self.nose.addItems(nose)
         # self.eye_combo.move(140, 20)
@@ -238,7 +237,7 @@ class FEN2(QWidget):
         # Button
         button = QPushButton('Soumettre', self)
         # button.move(100, 180)
-        button.clicked.connect(self.nextwindow2)
+        button.clicked.connect(self.submit)
 
         # Bouton pour retourner en arrière sur la fenêtre des coordonnées utilisateur
         self.bouton_retour = QPushButton('Retour')
@@ -266,10 +265,10 @@ class FEN2(QWidget):
         lunettes = self.lunettes.currentText()
         print(
             f'Taille du nez : {nose}, Couleur des cheveux : {hair_color}, Sexe : {sex}, Avait-il des lunettes ? : {lunettes}')
-
+        if nose==
     def nextwindow2(self):
         global banque_img
-        self.nextfen = FEN3(self.nom,self.prenom,self.date,banque_img)
+        self.nextfen = FEN3(self.nom, self.prenom, self.date, banque_img)
         self.nextfen.show()
         self.close()
 
@@ -310,16 +309,16 @@ class FEN3(QWidget):
                  next_window (self) : passe à la fenetre suivante
 
             See Also :
-                algo_gen.py
+                algo_genetic.py
             """
 
-    def __init__(self,nom,prenom,date, img):
+    def __init__(self, nom, prenom, date, img):
         super().__init__()
         self.img_encod = img
         self.initUI()
-        self.nom=nom
-        self.prenom=prenom
-        self.date=date
+        self.nom = nom
+        self.prenom = prenom
+        self.date = date
 
     def initUI(self):
 
@@ -447,9 +446,13 @@ class FEN3(QWidget):
                 print("ça passe par là")
         # si une seule selectionnée pour augmenter diversité des choix on introduit un autre visage random
         # (on peut modifier mais ca simplifie le code de la suite)
-        if len(img_choisie) == 1:
+        global banque_img
+        if len(img_choisie) == 4:
             rand = int(np.random.random() * 20)
-            global banque_img
+            img_choisie.append(banque_img[rand])
+        while len(img_choisie) < 4:
+            rand = int(np.random.random() * 20)
+            banque_img
             img_choisie.append(banque_img[rand])
 
         img_choisie = np.asarray(img_choisie)
@@ -459,7 +462,7 @@ class FEN3(QWidget):
         new_img = np.asarray(new_img)
         print("hey")
         #   ouverture de la nouvelle fenetre == nouveau calcul du cout
-        self.newfen = FEN3(self.nom,self.prenom,self.date,new_img)
+        self.newfen = FEN3(self.nom, self.prenom, self.date, new_img)
         self.newfen.show()
 
         #   fermeture de l'ancienne
@@ -520,7 +523,7 @@ class FEN3(QWidget):
         # msg.setText("Souhaitez vous valider votre choix?")
         # msg.exec_()
 
-        self.fen = FEN4(self.nom,self.prenom,self.date,img)  # prend en paramètres l'image choisie
+        self.fen = FEN4(self.nom, self.prenom, self.date, img)  # prend en paramètres l'image choisie
         self.fen.show()
         self.close()
 
@@ -543,6 +546,7 @@ class FEN4(QMainWindow):
              save_to_pdf (self) : genere un pdf de 2 pages qui permettent d'enregistrer le portrait robot avec et sans l'identité de la victime
 
         """
+
     def __init__(self, nom, prenom, date, image):
         super().__init__()
 
@@ -577,6 +581,8 @@ class FEN4(QMainWindow):
         # Associer un signal à l'événement "clicked" du bouton
         self.button.clicked.connect(self.save_to_pdf)
 
+        self.setWindowTitle("Validation du portrait robot")
+        self.setWindowIcon(QIcon('logo.jpg'))
     def save_to_pdf(self):
         # Obtenir le contenu du QTextEdit
         verif = self.text_edit.toPlainText()
