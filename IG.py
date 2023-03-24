@@ -1,10 +1,13 @@
 import sys
 import os
+from typing import Union, Iterable
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QIntValidator, QFont, QIcon
 from PyQt5.QtWidgets import QLabel, QApplication, QLineEdit, QWidget, QMessageBox, QFormLayout, QPushButton, \
     QGridLayout, QComboBox
 from PyQt5.QtWidgets import QTextEdit, QMainWindow, QVBoxLayout
+from numpy import ndarray
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
@@ -14,6 +17,7 @@ import get_data as get
 from PIL import Image
 import matplotlib.image as mat_im
 from tensorflow.keras.models import load_model
+from datetime import datetime
 
 # variables globales : compteur pour l'algo gen et les images choisies
 cnt = 1
@@ -30,7 +34,6 @@ class customButton(QPushButton):
         une taille et une couleur
     redefinition de l'evenement clic :
         change la couleur et le logo
-
     """
 
     # bouton personnaliser pour selectionner et deselectionner les visages
@@ -61,18 +64,18 @@ class FEN0(QWidget):
         Label (QLabel) : phrase d'introduction
         image_label (QLabel) : le logo du logiciel
         nextfen (QWidget) : la fenetre suivante
-
     Methods :
          nextwindow2(self) : passe à la fenetre suivante (nextfen)
     """
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('Portrait-robot')
+        self.setWindowTitle('Portrait_robot')
         # Créer les widgets pour l'interface graphique
-        self.label = QLabel("Bienvenue dans un générateur de portrait robot ! \nNous vous prions de répondre le plus honnêtement possible afin de faire un protrait robot \nde votre agresseur des plus representatifs. \nLors du choix des visages, nous vous conseillons également de choisir le minimum de propositions. \nVeuillez appuyer sur demarrer quand vous serez prêt.")
+        self.label = QLabel(
+            "Bienvenue dans un générateur de portrait robot ! \nNous vous prions de répondre le plus honnêtement possible afin de faire un protrait robot \nde votre agresseur des plus representatifs. \nLors du choix des visages, nous vous conseillons également de choisir le minimum de propositions. \nVeuillez appuyer sur demarrer quand vous serez prêt.")
         self.image_label = QLabel()
-        self.image_pixmap = QPixmap("logo.jpg")
+        self.image_pixmap = QPixmap("logo.png")
         self.image_label.setPixmap(self.image_pixmap.scaledToWidth(400))
         button = QPushButton("Démarrer", self)
         self.nextfen = FEN1()
@@ -97,18 +100,15 @@ class FEN1(QWidget):
     Fenetre pour rentrer et sauvegarder les informations de l'utilisateur
     Elle contient trois champs à remplir
     Si un champs est vide au moment de la validation, un message d'erreur apparait
-
     Attributes:
         e1 (QLineEdit) : champs pour rentrer le nom
         e2 (QLineEdit) : champs pour rentrer le prenom
         e3 (QLineEdit) : champs pour rentrer la date de naissance
         btn (QPushButton) : bouton "soumettre" pour passer à la fenetre suivante
         nextfen (QWidget) : la fenetre suivante
-
     Methods :
          nextwindow(self) : passe à la fenetre suivante (nextfen)
          rempli(self) : vérifie que l'utilisateur est renseigné le nom prenom et la date demandés
-
     """
 
     def __init__(self, parent=None):
@@ -181,7 +181,6 @@ class FEN1(QWidget):
 class FEN2(QWidget):
     """
         Fenetre pour rentrer les caractéristiques de l'agresseur
-
         Attributes:
             label1 (QLabel) : "Avait-il/elle un gros nez?"
             label2 (QLabel) : "Couleur des cheveux"
@@ -191,12 +190,10 @@ class FEN2(QWidget):
             bouton_retour (QPushButton) : bouton "retour" pour revenir à la fenetre precedente
             nextfen (QWidget) : la fenetre suivante
             firstwindow (QWidget) : la fenetre precedente
-
         Methods :
              nextwindow2(self) : passe à la fenetre suivante (nextfen)
              backwindow(self) : revient à la fenetre precedente
              submit(self) : sauvegarde les caractéristiques choisies par l'utilisateur
-
         """
 
     def __init__(self, nom, prenom, date, parent=None):
@@ -207,32 +204,37 @@ class FEN2(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle('Caracteristiques')
+        self.setWindowTitle('Caractéristiques')
         self.setGeometry(320, 320, 320, 320)
 
         # Labels
-        label1 = QLabel('Avait-il/elle un gros nez?', self)
-        label2 = QLabel('Couleur des cheveux:', self)
-        label3 = QLabel('Sexe:', self)
-        label4 = QLabel('Avait-il/elle des lunettes ?', self)
+        label1 = QLabel('Sexe:', self)
+        label2 = QLabel('Couleur de cheveux:', self)
+        label3 = QLabel('Pilosité faciale:', self)
+        label4 = QLabel('Avait-il/elle des lunettes?', self)
+        label5 = QLabel('Avait-il/elle un gros nez?', self)
 
         # Combo boxes
-        nose = ['Oui', 'Non','Je ne sais pas']
-        hair_colors = ['Brun', 'Gris', 'Blond', 'Noir','Je ne sais pas']
-        sex = ['Homme', 'Femme','Je ne sais pas']
-        lunettes = ['Oui', 'Non','Je ne sais pas']
-        self.nose = QComboBox(self)
-        self.nose.addItems(nose)
+        nose = ['Oui', 'Non', 'Je ne sais pas']
+        hair_colors = ['Brun', 'Gris', 'Blond', 'Noir', 'Chauve', 'Je ne sais pas']
+        pilosite = ['Barbe', 'Moustache', 'Ni barbe,ni moustache', 'Je ne sais pas']
+        sex = ['Homme', 'Femme', 'Je ne sais pas']
+        lunettes = ['Oui', 'Non', 'Je ne sais pas']
+
+        self.sex_combo = QComboBox(self)
+        self.sex_combo.addItems(sex)
         # self.eye_combo.move(140, 20)
         self.hair_combo = QComboBox(self)
         self.hair_combo.addItems(hair_colors)
         # self.hair_combo.move(140, 60)
-        self.sex_combo = QComboBox(self)
-        self.sex_combo.addItems(sex)
+        self.pilo_combo = QComboBox(self)
+        self.pilo_combo.addItems(pilosite)
         # self.sex_combo.move(140, 100)
         self.lunettes = QComboBox(self)
         self.lunettes.addItems(lunettes)
         # self.skin_combo.move(140, 140)
+        self.nose = QComboBox(self)
+        self.nose.addItems(nose)
 
         # Button
         button = QPushButton('Soumettre', self)
@@ -245,16 +247,18 @@ class FEN2(QWidget):
 
         layout = QGridLayout()
         # Qt.AlignVCenter
-        layout.addWidget(label1, 4, 1)
+        layout.addWidget(label1, 1, 1)
         layout.addWidget(label2, 2, 1)
         layout.addWidget(label3, 3, 1)
-        layout.addWidget(label4, 1, 1)
-        layout.addWidget(self.nose, 1, 2)
+        layout.addWidget(label4, 4, 1)
+        layout.addWidget(label5, 5, 1)
+        layout.addWidget(self.sex_combo, 1, 2)
         layout.addWidget(self.hair_combo, 2, 2)
-        layout.addWidget(self.sex_combo, 3, 2)
+        layout.addWidget(self.pilo_combo, 3, 2)
         layout.addWidget(self.lunettes, 4, 2)
-        layout.addWidget(button, 5, 2)
-        layout.addWidget(self.bouton_retour, 6, 2)
+        layout.addWidget(self.nose, 5, 2)
+        layout.addWidget(button, 6, 2)
+        layout.addWidget(self.bouton_retour, 7, 2)
         self.setLayout(layout)
         self.setWindowIcon(QIcon('logo.jpg'))
 
@@ -263,12 +267,20 @@ class FEN2(QWidget):
         hair_color = self.hair_combo.currentText()
         sex = self.sex_combo.currentText()
         lunettes = self.lunettes.currentText()
-        print(
-            f'Taille du nez : {nose}, Couleur des cheveux : {hair_color}, Sexe : {sex}, Avait-il des lunettes ? : {lunettes}')
-        if nose==
+        pilo = self.pilo_combo.currentText()
+        if nose != 'Je ne sais pas' or hair_color != 'Je ne sais pas' or sex != 'Je ne sais pas' or lunettes != 'Je ne sais pas' or pilo != 'Je ne sais pas':
+            self.nextwindow2()
+        else:
+            msg_err = QMessageBox()
+            msg_err.setWindowTitle("Erreur")
+            msg_err.setText("Veuillez choisir au moins une caractéristique.")
+            msg_err.exec_()
+
     def nextwindow2(self):
         global banque_img
+        print("hint1")
         self.nextfen = FEN3(self.nom, self.prenom, self.date, banque_img)
+        print("hint2")
         self.nextfen.show()
         self.close()
 
@@ -283,22 +295,16 @@ class FEN2(QWidget):
 class FEN3(QWidget):
     """
             Fenetre pour choisir récursivement l'image la plus ressemblante à l'agresseur
-
             Attributes:
                 img_encod (ndarray) : liste d'image encodées
-
                 pour i de 1 à 6 :
                 img{i} (QPixmap) : l'image décodée d'un visage
                 label{i} (QLabel) : le label comportant l'image
                 btn_selection{i} (CustomButton) : bouton pour sélectionner l'image
-
                 btn1 (QPushButton) : bouton "continuer" pour relancer la fenetre avec de nouvelles images
                 btn2 (QPushButton) : bouton "valider" pour valider le visage sélectionné passer à la fenetre suivante
                 fen (QGridLayout) : grille pour disposer tous les éléments
-
                 nextfen (QWidget) : la fenetre suivante
-
-
             Methods :
                 __init__ (self,img) : constructeur qui prend une liste d'images encodées en argument
                  gen_premieres_img (self) : decode des images et les enregistre
@@ -307,40 +313,39 @@ class FEN3(QWidget):
                  nextimg (self) : renouvelle les images en passant par algo_gen si le nombre d'itération n'excède pas 10
                  algo_gen (self) : renouvelle les images
                  next_window (self) : passe à la fenetre suivante
-
             See Also :
-                algo_genetic.py
+                algo_gen.py
             """
 
     def __init__(self, nom, prenom, date, img):
         super().__init__()
+        print("hint>3")
         self.img_encod = img
-        self.initUI()
         self.nom = nom
         self.prenom = prenom
         self.date = date
+        self.initUI()
 
     def initUI(self):
 
         self.gen_premieres_img()
-
         # Une à une on prend les image et on les place dans un label
-        self.img1 = QPixmap('img1.png')
+        self.img1 = QPixmap('Img/img1.png')
         self.label1 = QLabel()
         self.label1.setPixmap(self.img1)
-        self.img2 = QPixmap('img2.png')
+        self.img2 = QPixmap('Img/img2.png')
         self.label2 = QLabel()
         self.label2.setPixmap(self.img2)
-        self.img3 = QPixmap('img3.png')
+        self.img3 = QPixmap('Img/img3.png')
         self.label3 = QLabel()
         self.label3.setPixmap(self.img3)
-        self.img4 = QPixmap('img4.png')
+        self.img4 = QPixmap('Img/img4.png')
         self.label4 = QLabel()
         self.label4.setPixmap(self.img4)
-        self.img5 = QPixmap('img5.png')
+        self.img5 = QPixmap('Img/img5.png')
         self.label5 = QLabel()
         self.label5.setPixmap(self.img5)
-        self.img6 = QPixmap('img6.png')
+        self.img6 = QPixmap('Img/img6.png')
         self.label6 = QLabel()
         self.label6.setPixmap(self.img6)
 
@@ -395,12 +400,12 @@ class FEN3(QWidget):
         global autoencoder
         img_list = autoencoder.decoder.predict(self.img_encod)
 
-        mat_im.imsave("img1.png", img_list[0])
-        mat_im.imsave("img2.png", img_list[1])
-        mat_im.imsave("img3.png", img_list[2])
-        mat_im.imsave("img4.png", img_list[3])
-        mat_im.imsave("img5.png", img_list[4])
-        mat_im.imsave("img6.png", img_list[5])
+        mat_im.imsave("Img/img1.png", img_list[0])
+        mat_im.imsave("Img/img2.png", img_list[1])
+        mat_im.imsave("Img/img3.png", img_list[2])
+        mat_im.imsave("Img/img4.png", img_list[3])
+        mat_im.imsave("Img/img5.png", img_list[4])
+        mat_im.imsave("Img/img6.png", img_list[5])
 
     def nextimg(self):
         global cnt
@@ -452,7 +457,6 @@ class FEN3(QWidget):
             img_choisie.append(banque_img[rand])
         while len(img_choisie) < 4:
             rand = int(np.random.random() * 20)
-            banque_img
             img_choisie.append(banque_img[rand])
 
         img_choisie = np.asarray(img_choisie)
@@ -531,20 +535,14 @@ class FEN3(QWidget):
 class FEN4(QMainWindow):
     """
         Fenetre pour valider son choix et générer un pdf
-
         Attributes:
             label (QLabel) : décrit le role de la fenetre
             image_label (QLabel) : contient l'image choisie
-
             button (QPushButton) : bouton pour fermer le logiciel et générer un pdf en sortie
-
             A FINIR
-
-
         Methods :
             __init__ (self,image) : constructeur qui prend l'image choisie dans la page precedente en argument
              save_to_pdf (self) : genere un pdf de 2 pages qui permettent d'enregistrer le portrait robot avec et sans l'identité de la victime
-
         """
 
     def __init__(self, nom, prenom, date, image):
@@ -583,6 +581,7 @@ class FEN4(QMainWindow):
 
         self.setWindowTitle("Validation du portrait robot")
         self.setWindowIcon(QIcon('logo.jpg'))
+
     def save_to_pdf(self):
         # Obtenir le contenu du QTextEdit
         verif = self.text_edit.toPlainText()
@@ -595,6 +594,10 @@ class FEN4(QMainWindow):
 
             # Données à mettre dans le pdf
             text = self.prenom.text() + " " + self.nom.text() + " né(e) le " + self.date.text()
+
+            # date
+            now = datetime.now()
+            today = now.strftime("%d/%m/%Y %H:%M:%S")
 
             # Créer un objet canvas pour générer le PDF
             c = canvas.Canvas(f"User/{self.prenom.text()}_{self.nom.text()}.pdf", pagesize=letter)
@@ -609,6 +612,9 @@ class FEN4(QMainWindow):
             for line in text.split('\n'):
                 textobject.textLine(line)
             c.drawText(textobject)
+
+            # Dessiner la date
+            c.drawString(1 * inch, 8 * inch, today)
 
             # Sauter une page
             c.showPage()
