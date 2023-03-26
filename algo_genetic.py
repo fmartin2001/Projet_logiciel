@@ -4,53 +4,53 @@ import copy
 
 
 # Mutation function
-def mutation(encoded_img_list):
-    """
-       Args:
-           encoded_img_list
-           proba : must be between 0 and 1
-
-       Returns:
-           autoencoder, decoder, encoder compiled
-    """
-    proba=0.5
-    n, m, o, q = encoded_img_list.shape
-    encoded_img_list_copy = copy.deepcopy(encoded_img_list)
-    for i in range(n):  # for each encoded image
+# def mutation(encoded_img_list):
+#     """
+#        Args:
+#            encoded_img_list
+#            proba : must be between 0 and 1
+#
+#        Returns:
+#            autoencoder, decoder, encoder compiled
+#     """
+#     proba=0.5
+#     n, m, o, q = encoded_img_list.shape
+#     encoded_img_list_copy = copy.deepcopy(encoded_img_list)
+#     for i in range(n):  # for each encoded image
+#         for j in range(m):
+#             p = np.random.random()
+#             if p < proba:
+#                 for k in range(o):
+#                     for l in range(q):
+#                         p = np.random.random()
+#
+#                         if p < proba:
+#                             encoded_img_list_copy[i, j, k, l] = 1 - encoded_img_list[i, j, k, l]
+#     return encoded_img_list_copy
+def mutation(P, Tm):
+    n, m = P.shape
+    P_copy = np.copy(P)
+    for i in range(n):
         for j in range(m):
             p = np.random.random()
-            if p < proba:
-                for k in range(o):
-                    for l in range(q):
-                        p = np.random.random()
+            if p < Tm:
+                P_copy[i, j] = 1- P[i, j]
+    return P_copy
 
-                        if p < proba:
-                            encoded_img_list_copy[i, j, k, l] = 1 - encoded_img_list[i, j, k, l]
-    return encoded_img_list_copy
-
-
-def crossing_over(encoded_img_list, proba=0.5):
-    new_encoded_img_list = np.copy(encoded_img_list)
+def crossing_over_temp(P, Tc):
+    new_P = np.copy(P)
     liste = []
 
-    for i in range(0, len(new_encoded_img_list)):
-        if np.random.random() < proba:
-            indc_im = np.random.randint(0, new_encoded_img_list.shape[0] - 1)
-            posc_x = np.random.randint(0, new_encoded_img_list.shape[1] - 1)
-            posc_y = np.random.randint(0, new_encoded_img_list.shape[2] - 1)
-            posc_z = np.random.randint(0, new_encoded_img_list.shape[3] - 1)
-            tmp = new_encoded_img_list[i, posc_x:new_encoded_img_list.shape[1], posc_y:new_encoded_img_list.shape[2],
-                  posc_z:new_encoded_img_list.shape[3]]
-            new_encoded_img_list[i, posc_x:new_encoded_img_list.shape[1], posc_y:new_encoded_img_list.shape[2],
-            posc_z:new_encoded_img_list.shape[3]] = new_encoded_img_list[indc_im,
-                                                    posc_x:new_encoded_img_list.shape[1],
-                                                    posc_y:new_encoded_img_list.shape[2],
-                                                    posc_z:new_encoded_img_list.shape[3]]
-            new_encoded_img_list[indc_im, posc_x:new_encoded_img_list.shape[1], posc_y:new_encoded_img_list.shape[2],
-            posc_z:new_encoded_img_list.shape[3]] = tmp
+    for i in range(0, len(new_P)):
+        if np.random.random() < Tc:
+            indc_im = np.random.randint(0, new_P.shape[0] - 1)
+            posc_x = np.random.randint(0, new_P.shape[1] - 1)
+            tmp = new_P[i, posc_x:new_P.shape[1]]
+            new_P[i, posc_x:new_P.shape[1]] = new_P[indc_im, posc_x:new_P.shape[1]]
+            new_P[indc_im, posc_x:new_P.shape[1]] = tmp
             liste.append(indc_im)
 
-    return new_encoded_img_list, liste
+    return new_P, liste
 
 
 def new_img_generator(encoded_img_selected):
@@ -58,54 +58,17 @@ def new_img_generator(encoded_img_selected):
     1 ou 2 img arrivent normalement sous forme de liste
     """
 
-    new_img_proposed = mutation(encoded_img_selected)
-    print("et1")
-    new_img, indices = crossing_over(new_img_proposed)
-    print("2")
+    new_img_proposed = mutation(encoded_img_selected,0.1)
+    new_img, indices = crossing_over_temp(new_img_proposed,0.6)
 
     res=[]
     nb_modified = 6-len(encoded_img_selected)
-    print(nb_modified)
     for i in range (nb_modified):
         res.append(new_img[i])
     for i in range (len(encoded_img_selected)):
         res.append(encoded_img_selected[i])
     return res
 
-    # if len(encoded_img_selected) ==2:
-    #     new_img_proposed = mutation(encoded_img_selected)
-    #     new_img, indices = crossing_over(new_img_proposed)
-    #     other_cross, ind = crossing_over(encoded_img_selected)
-    #     res=[]#np.concatenate(new_img, encoded_img_selected,axis=0)
-    #     for i in range (2):
-    #         res.append(new_img[i])
-    #     for i in range (2):
-    #         res.append(encoded_img_selected[i])
-    #     for i in range (2):
-    #         res.append(other_cross[i])
-    #     return res
-    # if len(encoded_img_selected) == 1:
-    #     new_img_proposed = []
-    #     for i in range(4):
-    #         new_img = mutation(encoded_img_selected)
-    #         print("fa")
-    #         new_im, indice = crossing_over(new_img)
-    #         print("fi")
-    #         new_img_proposed.append(new_im)
-    #         print("fi")
-    #     print("first")
-    #     img = np.load('./Data/20_encoded_img.npy')
-    #     print("first")
-    #     rand=int(np.random.random()*20)
-    #     print(rand)
-    #     new_img_proposed.append(img[rand])
-    #     print("trouvé")
-    #     new_img_proposed.append(encoded_img_selected[0])
-    #     new_img_proposed = np.asarray(new_img_proposed)
-
-        # return new_img_proposed
-    # else:
-    #     return encoded_img_selected
 
 
 # def algo_gen(encoded_img_selected) :

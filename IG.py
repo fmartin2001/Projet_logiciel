@@ -21,10 +21,10 @@ from datetime import datetime
 
 # variables globales : compteur pour l'algo gen et les images choisies
 cnt = 1
-img_recurrente = []
-autoencoder = load_model("./Model/autoencoder")
-banque_img = np.load('./Data/20_encoded_img.npy')
 
+decoder = load_model("./model/Model/decoder_smallset_512_100_8864")
+banque_img = np.load('./Data/20_encoded_img.npy')
+img_recurrente = [[banque_img[19],0]]
 
 class customButton(QPushButton):
     """
@@ -278,9 +278,7 @@ class FEN2(QWidget):
 
     def nextwindow2(self):
         global banque_img
-        print("hint1")
         self.nextfen = FEN3(self.nom, self.prenom, self.date, banque_img)
-        print("hint2")
         self.nextfen.show()
         self.close()
 
@@ -319,7 +317,6 @@ class FEN3(QWidget):
 
     def __init__(self, nom, prenom, date, img):
         super().__init__()
-        print("hint>3")
         self.img_encod = img
         self.nom = nom
         self.prenom = prenom
@@ -397,8 +394,13 @@ class FEN3(QWidget):
         self.setWindowIcon(QIcon('logo.jpg'))
 
     def gen_premieres_img(self):
-        global autoencoder
-        img_list = autoencoder.decoder.predict(self.img_encod)
+        """genere 6 images en décodant les images encodées de l'attribut img_encod
+
+        return :
+        6 images au format png dans un fichier Img
+        """
+        global decoder
+        img_list = decoder.predict(self.img_encod)
 
         mat_im.imsave("Img/img1.png", img_list[0])
         mat_im.imsave("Img/img2.png", img_list[1])
@@ -408,29 +410,58 @@ class FEN3(QWidget):
         mat_im.imsave("Img/img6.png", img_list[5])
 
     def nextimg(self):
+        """gère le renouvellement des images de la fenetre et appelle l'algo genetique si besoin
+
+        la fonction compte le nombre d'itération de l'algo_gen
+        mais aussi le nombre de fois où une image est choisie
+
+        si le nombre d'itération est superieur à 10, ou le nombre de fois ou une image a été choisie supérieure à 5,
+        un message d'erreur apparait et l'algo génétique s'arrête
+
+        sinon appelle l'algo génétique
+
+        see also :
+        algo_gen()
+        """
         global cnt
         global img_recurrente
 
         list = [self.btn_selection1, self.btn_selection2, self.btn_selection3, self.btn_selection4, self.btn_selection5,
                 self.btn_selection6]
-        # img_choisie = []
-        # for i in range(len(list)):
-        #     if list[i].isChecked():
-        #         img_choisie.append(self.img_encod[i])
-        #
-        # for i in range(len(img_choisie)):
-        #     if np.array_equal(img_recurrente[0], img_choisie[i]) or len(img_recurrente) == 0:
-        #         img_recurrente.append(img_choisie[i])
-        #
-        if cnt < 10 and len(img_recurrente) < 5:
+        img_choisie = []
+        for i in range(len(list)):
+            if list[i].isChecked():
+                img_choisie.append(self.img_encod[i])
+
+        for j in range (len(img_choisie)):
+            for i in range(len(img_recurrente)):
+                if (img_recurrente[i][0]==img_choisie[j]).all() :
+                    img_recurrente[i][1]=img_recurrente[i][1]+1
+                else :
+                    img_recurrente.append([img_choisie[j],1])
+        max_recurrente=0
+        index=[]
+        ######################################attention il y a un probleme à cette fonction###################################
+        for i in range (len(img_recurrente)):
+            if img_recurrente[i][1]>max_recurrente :
+                max_recurrente=img_recurrente[i][1]
+                if img_recurrente[i][1]==5:
+                    index.append(i)
+
+        if cnt < 10 and max_recurrente < 5:
             cnt = cnt + 1
             self.algo_gen()
-        elif len(img_recurrente) >= 5:
-            self.nextwindow(img_recurrente[4])
+        elif max_recurrente >= 5:
+            msg = QMessageBox()
+            msg.setWindowTitle("Erreur")
+            msg.setText("Vous avez choisi 5 fois ou plus le meme visage pour le valider, veuillez sélectionner celui-ci uniquement et cliquer sur soumettre")
+            msg.exec_()
+            for ind in index :
+                img_recurrente[ind][1]=4
         else:
             msg = QMessageBox()
             msg.setWindowTitle("Erreur")
-            msg.setText("Il est temps de faire un choix, veuillez sélectionner 1 visage et cliquer sur valider")
+            msg.setText("Il est temps de faire un choix, veuillez sélectionner 1 visage et cliquer sur soumettre")
             msg.exec_()
 
     def algo_gen(self):
@@ -448,7 +479,6 @@ class FEN3(QWidget):
 
             if list[i].isChecked():
                 img_choisie.append(self.img_encod[i])
-                print("ça passe par là")
         # si une seule selectionnée pour augmenter diversité des choix on introduit un autre visage random
         # (on peut modifier mais ca simplifie le code de la suite)
         global banque_img
@@ -460,11 +490,9 @@ class FEN3(QWidget):
             img_choisie.append(banque_img[rand])
 
         img_choisie = np.asarray(img_choisie)
-        print(len(img_choisie))
         #   procede aux mutations et crossing over
         new_img = algo.new_img_generator(img_choisie)
         new_img = np.asarray(new_img)
-        print("hey")
         #   ouverture de la nouvelle fenetre == nouveau calcul du cout
         self.newfen = FEN3(self.nom, self.prenom, self.date, new_img)
         self.newfen.show()
@@ -522,10 +550,6 @@ class FEN3(QWidget):
         """Renvoie sur la fenetre suivante
         Sauvegarde le choix final
         """
-        # msg = QMessageBox(main_window)
-        # msg.setWindowTitle("Etes vous sur(e) de votre choix?")
-        # msg.setText("Souhaitez vous valider votre choix?")
-        # msg.exec_()
 
         self.fen = FEN4(self.nom, self.prenom, self.date, img)  # prend en paramètres l'image choisie
         self.fen.show()
