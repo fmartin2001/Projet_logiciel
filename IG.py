@@ -28,15 +28,14 @@ img_recurrente = [[banque_img[19],0]]
 
 class customButton(QPushButton):
     """
-    Redefinie le widget QPushButton
-    Ajoute les attributs suivants :
-        le logo 'check' ou rien
-        une taille et une couleur
-    redefinition de l'evenement clic :
-        change la couleur et le logo
+    Redefinie le widget QPushButton pour sélectionner des visages
+    Attributes:
+        Aucun attribut en plus mais définition d'une taille fixe et d'une couleur de fond
+
+    Methods :
+         on_click(self) : Redefinition de l'evenement clic qui change la couleur et le logo du bouton
     """
 
-    # bouton personnaliser pour selectionner et deselectionner les visages
     def __init__(self, parent=None):
         super().__init__(parent)
         # self.setText("Choisir")
@@ -91,6 +90,9 @@ class FEN0(QWidget):
         self.setWindowIcon(QIcon('logo.jpg'))
 
     def nextwindow2(self):
+        """
+        Ferme la fenêtre et ouvre la suivante
+        """
         self.nextfen.show()
         self.close()
 
@@ -171,7 +173,7 @@ class FEN1(QWidget):
 
     def nextwindow(self):
         """
-        Ferme la fenetre 1 puis ouvre la fenetre 2
+        Ferme la fenetre 1 puis ouvre la fenetre 2 (la suivante)
         """
         # changement de fenetre
         self.nextfen.show()
@@ -263,6 +265,11 @@ class FEN2(QWidget):
         self.setWindowIcon(QIcon('logo.jpg'))
 
     def submit(self):
+        """
+        Fonction appelée lorsque l'utilisateur clique sur le bouton "button" pour soumettre.
+        Si au moins une caractéristique est choisie, la fonction nextwindow2 est appelée.
+        Sinon, un message d'erreur apparaît.
+        """
         nose = self.nose.currentText()
         hair_color = self.hair_combo.currentText()
         sex = self.sex_combo.currentText()
@@ -277,15 +284,19 @@ class FEN2(QWidget):
             msg_err.exec_()
 
     def nextwindow2(self):
+        """
+        Ouvre la fenere suivante (Fenetre 3) et ferme la fenêtre courante.
+        """
         global banque_img
         self.nextfen = FEN3(self.nom, self.prenom, self.date, banque_img)
         self.nextfen.show()
         self.close()
 
     def backwindow(self):
+        """
+        Ferme la fenêtre courante et ouvre la précédente (Fenetre 1)
+        """
         self.close()
-        # ça marche (je sais pas pourquoi mais faut les mettre en attributs)
-
         self.first_window = FEN1()
         self.first_window.show()
 
@@ -326,7 +337,7 @@ class FEN3(QWidget):
     def initUI(self):
 
         self.gen_premieres_img()
-        # Une à une on prend les image et on les place dans un label
+        # Une à une on prend les images et on les place dans un label
         self.img1 = QPixmap('Img/img1.png')
         self.label1 = QLabel()
         self.label1.setPixmap(self.img1)
@@ -346,7 +357,7 @@ class FEN3(QWidget):
         self.label6 = QLabel()
         self.label6.setPixmap(self.img6)
 
-        # Ajout des deux boutons de validations
+        # Ajout des deux boutons de validation
         self.bt1 = QPushButton("Continuer la recherche")
         self.bt1.setFixedSize(200, 30)
         self.bt2 = QPushButton("Soumettre le visage final")
@@ -394,11 +405,11 @@ class FEN3(QWidget):
         self.setWindowIcon(QIcon('logo.jpg'))
 
     def gen_premieres_img(self):
-        """genere 6 images en décodant les images encodées de l'attribut img_encod
-
-        return :
-        6 images au format png dans un fichier Img
         """
+        Décode les images encodées de l'attribut img_encod grâce au décodeur.
+        Sauvegarde ces images au format .png dans le dossier Img
+        """
+
         global decoder
         img_list = decoder.predict(self.img_encod)
 
@@ -410,7 +421,7 @@ class FEN3(QWidget):
         mat_im.imsave("Img/img6.png", img_list[5])
 
     def nextimg(self):
-        """gère le renouvellement des images de la fenetre et appelle l'algo genetique si besoin
+        """Gère le renouvellement des images de la fenetre et appelle l'algo genetique si besoin
 
         la fonction compte le nombre d'itération de l'algo_gen
         mais aussi le nombre de fois où une image est choisie
@@ -501,8 +512,8 @@ class FEN3(QWidget):
         self.close()
 
     def selection1vs5(self):
-        """Verification du nombre d'images selectionnees
-        Il doit etre egal entre 1 et 5 inclu
+        """Vérification du nombre d'images selectionnées :
+        Il doit etre égal entre 1 et 5 inclu
         Si nombre reglementaire, renvoie à la fonction nextimg
         Sinon affiche un message d'erreur
         """
@@ -521,8 +532,8 @@ class FEN3(QWidget):
             msg.exec_()
 
     def selection1_final(self):
-        """Verification du nombre d'images selectionnees
-        Il doit etre egal à 1 pour valider
+        """Verification du nombre d'images selectionnées pour la validation finale
+        Il doit étre egal à 1 pour valider
         Si nombre reglementaire, renvoie à la fonction nextwindow
         Sinon affiche un message d'erreur
         """
@@ -534,7 +545,7 @@ class FEN3(QWidget):
         for btn in list:
             if btn.isChecked():
                 cnt = cnt + 1
-                btn_selected = int(np.where(list == btn)[0] + 1)  # quel numéro d'image c'était ?
+                btn_selected = int(np.where(list == btn)[0] + 1)  #numéro d'image correspondant à l'image choisie
                 name = "img" + str(btn_selected)
                 img_selected = getattr(self, name)  # image correspondant a la photo choisie
 
@@ -547,8 +558,9 @@ class FEN3(QWidget):
             msg.exec_()
 
     def nextwindow(self, img):
-        """Renvoie sur la fenetre suivante
-        Sauvegarde le choix final
+        """ Renvoie sur la fenetre suivante (Fenêtre 4) et ferme la fenêtre courante
+        Parameters:
+            img (QPixmap): Image finale choisie par l'utilisateur
         """
 
         self.fen = FEN4(self.nom, self.prenom, self.date, img)  # prend en paramètres l'image choisie
@@ -607,11 +619,16 @@ class FEN4(QMainWindow):
         self.setWindowIcon(QIcon('logo.jpg'))
 
     def save_to_pdf(self):
+        """
+        Appelle la fonction verification qui renvoie un boolean: elle vérofoe que le nom et le prénom renseignés à la fenêtre 1 correspondent à ceux renseignés dans le QTextEdit "text_edit".
+        Si True: Sauvegarde l'image choisie, le nom, le prénom, la date de naissance de la victime et la date du jour dans un fichier PDF au format nom_prenom.pdf dans le dossier User.
+        Si False: Ne fait rien
+        """
         # Obtenir le contenu du QTextEdit
         verif = self.text_edit.toPlainText()
         text_to_verify = self.nom.text() + " " + self.prenom.text()
 
-        # Boolean pour savoir si c'est bon
+        # Boolean pour savoir si la contenu du QtextEdit correspond aux noms et prénoms de la fenêtre 1
         correct = self.verification(verif, text_to_verify)
 
         if correct == True:
@@ -667,6 +684,14 @@ class FEN4(QMainWindow):
             self.close()
 
     def verification(self, verif_, text_):
+        """
+        Compare le contenu de deux chaînes de caractères.Si le contenu est le même, renvoie True. Sinon, un message d'erreur apparaît et la fonction renvoie False.
+            Parameters:
+                verif_ (str)
+                text_ (str)
+            Return:
+                return (bool):
+            """
         if verif_ != text_:
             msg = QMessageBox()
             msg.setWindowTitle("Erreur")
