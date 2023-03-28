@@ -276,7 +276,8 @@ class FEN2(QWidget):
         lunettes = self.lunettes.currentText()
         pilo = self.pilo_combo.currentText()
         if nose != 'Je ne sais pas' or hair_color != 'Je ne sais pas' or sex != 'Je ne sais pas' or lunettes != 'Je ne sais pas' or pilo != 'Je ne sais pas':
-            nb_lignes = 30000  # le nombre d'images maximal à prendre en compte
+
+            nb_lignes = 30000  # le nombre d'images maximal à prendre en compte = nb d'images encodées dans le fichier
             usecols = [i for i in range(1, 41)]
             mat = np.loadtxt('./CelebA/Anno/list_attr_celeba.txt', skiprows=1, max_rows=nb_lignes, usecols=usecols)
 
