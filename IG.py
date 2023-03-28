@@ -284,8 +284,10 @@ class FEN2(QWidget):
             liste_filtree = get.filtre(get.create_dict(nose,hair_color,sex,lunettes,pilo), mat)
             # Créer une liste filtrée en fonction du sexe choisi
             liste_sex = get.filtre(get.create_sex_dict(sex), mat)
-            # Renvoie une liste des indices des images à prendre dans la liste d'images encodées
-            liste_img_filtre = get.data_img_filtrees(liste_filtree, liste_sex, 100)
+            # Renvoie une liste des indices des images à prendre dans la liste d'images encodées Attention : ne
+            # correspond pas à l'identifiant de l'image mais à la position dans la liste qui commence à 0. Si on veut
+            # retrouver l'identifiant, il faut faire +1 à tous les indices
+            liste_img_filtre = get.data_img_filtrees(liste_filtree, liste_sex, 100) #100 images dans la liste
             print(liste_img_filtre)
 
             self.nextwindow2()
