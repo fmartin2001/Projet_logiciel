@@ -29,11 +29,139 @@ def charger_dataset(chemin_vers_data, nb_im):
     return img_pixel_list
 
 
+def create_dict(nose, hair_color, sex, lunettes, pilo):
+    """
+    créer un dictionnaire en fonction des réponses de l'utilisateur (utilisé pour filtrer)
+    """
+    dic = {}
+    if nose == "Oui":
+        dic["Gros nez"] = 1
+    elif nose == "Non":
+        dic["Gros nez"] = -1
+
+    if hair_color == "Brun":
+        dic["Brun"] = 1
+    elif hair_color == "Blond":
+        dic["Blond"] = 1
+    elif hair_color == "Noir":
+        dic["Noir"] = 1
+    elif hair_color == "Gris":
+        dic["Gris"] = 1
+    elif hair_color == "Chauve":
+        dic["Chauve"] = 1
+
+    if sex == "Homme":
+        dic["Sexe"] = 1
+    elif sex == "Femme":
+        dic["Sexe"] = -1
+
+    if lunettes == "Oui":
+        dic["Lunettes"] = 1
+    elif lunettes == "Non":
+        dic["Lunettes"] = -1
+
+    if pilo == "Barbe":
+        dic["Barbe"] = 1
+    elif pilo == "Moustache":
+        dic["Moustache"] = 1
+    elif pilo == "Ni barbe,ni moustache":
+        dic["Ni_barbe_moustache"] = 1
+
+    return dic
+
+
+def create_sex_dict(sex):
+    """
+    crée un dictionnaire selon le sexe pour filtrer ensuite
+    """
+
+    dic_sex = {}
+    if sex == "Femme":
+        dic_sex["Sexe"] = -1
+    elif sex == "Homme":
+        dic_sex["Sexe"] = 1
+
+    return dic_sex
+def filtre(dictionnaire, matrice):
+    """
+    Parameters:
+        dictionnaire (dict): dictionnaire avec en clé l'attribut choisi et en valeur -1 ou 1
+        matrice (numpy.ndarray) : matrice numpy des caractéristiques du jeu de données
+    Return:
+        return (list): liste des indexes des images correspondants aux critères choisis
+    """
+
+    index_img = []
+    nb_caracteristic = []
+
+    for key, value in dictionnaire.items():
+        if key == "Sexe":
+            nb_caracteristic.append((20, value))  # -1 pour une femme
+        if key == "Gros nez":
+            nb_caracteristic.append((7, value))
+        if key == "Lunettes":
+            nb_caracteristic.append((15, value))
+        if key == "Moustache":
+            nb_caracteristic.append((22, value))
+        if key == "Barbe":
+            nb_caracteristic.append((16, value))
+        if key == "Ni_barbe_moustache":
+            nb_caracteristic.append((24, value))
+        if key == "Brun":
+            nb_caracteristic.append((11, value))
+        if key == "Blond":
+            nb_caracteristic.append((9, value))  # on append un tuple avec le numéro de la colonne et la valeur
+        if key == "Gris":
+            nb_caracteristic.append((17, value))
+        if key == "Noir":
+            nb_caracteristic.append((8, value))
+        if key == "Chauve":
+            nb_caracteristic.append((4, value))
+
+    for i in range(len(matrice)):
+        count = 0
+        for element in nb_caracteristic:
+            if matrice[i][element[0]] == element[1]:
+                count += 1
+
+        if count == len(nb_caracteristic):
+            index_img.append(i)
+    return index_img
+
+
+def data_img_filtrees(filtre, filtre_sex, nb):
+    """
+    on prend les img filtrées. S'il n'y en a pas assez, on complete avec des images random du meme sexe jusqu'a avoir nb images dans la liste
+    """
+    list_img_filtre = filtre.copy()
+    if len(filtre) < nb:
+        for i in range(nb - len(filtre)):
+            list_img_filtre.append(np.random.choice(filtre_sex))
+
+    return list_img_filtre[0:nb]
+
 if __name__ == "__main__":
+    """
     nb_img_a_charger = 4
-    img_pixel_list = charger_dataset('./img_align_celeba/img_align_celeba',nb_img_to_load)
+    img_pixel_list = charger_dataset('./img_align_celeba/img_align_celeba',nb_img_a_charger)
 
     chemin = f"./img_align_celeba/img_align_celeba/{nb_img_a_charger}_img_pixel_list"
 
     if not os.path.isfile(chemin):
         np.save(chemin, img_pixel_list)
+        """
+
+
+    #Charger le data set
+    nb_lignes = 30000 #le nombre d'images maximal à prendre en compte
+    usecols = [i for i in range(1, 41)]
+    mat = np.loadtxt('./CelebA/Anno/list_attr_celeba.txt', skiprows=1, max_rows=nb_lignes, usecols=usecols)
+
+    #Créer une liste filtrée en fonction des caractéristiques
+    liste_filtree = filtre(create_dict("Non", "Blond", "Homme", "Oui", "Barbe"), mat)
+    #Créer une liste filtrée en fonction du sexe choisi
+    liste_sex = filtre(create_sex_dict("Femme"), mat)
+
+    #Renvoie une liste des indices des images à prendre dans la liste d'images encodées
+    liste_img_filtre = data_img_filtrees(liste_filtree, liste_sex, 100)
+    print(liste_img_filtre)
