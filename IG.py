@@ -22,7 +22,7 @@ from datetime import datetime
 # variables globales : compteur pour l'algo gen et les images choisies
 cnt = 1
 
-decoder = load_model("./model/Model/decoder_smallset_512_100_8864")
+decoder = load_model("./model/Model/decoder_smallset_512_100_8864",compile=False)
 banque_img = np.load('./Data/20_encoded_img.npy')
 img_recurrente = [[banque_img[19],0]]
 
@@ -276,6 +276,18 @@ class FEN2(QWidget):
         lunettes = self.lunettes.currentText()
         pilo = self.pilo_combo.currentText()
         if nose != 'Je ne sais pas' or hair_color != 'Je ne sais pas' or sex != 'Je ne sais pas' or lunettes != 'Je ne sais pas' or pilo != 'Je ne sais pas':
+            nb_lignes = 30000  # le nombre d'images maximal à prendre en compte
+            usecols = [i for i in range(1, 41)]
+            mat = np.loadtxt('./CelebA/Anno/list_attr_celeba.txt', skiprows=1, max_rows=nb_lignes, usecols=usecols)
+
+            # Créer une liste filtrée en fonction des caractéristiques
+            liste_filtree = get.filtre(get.create_dict(nose,hair_color,sex,lunettes,pilo), mat)
+            # Créer une liste filtrée en fonction du sexe choisi
+            liste_sex = get.filtre(get.create_sex_dict(sex), mat)
+            # Renvoie une liste des indices des images à prendre dans la liste d'images encodées
+            liste_img_filtre = get.data_img_filtrees(liste_filtree, liste_sex, 100)
+            print(liste_img_filtre)
+
             self.nextwindow2()
         else:
             msg_err = QMessageBox()
