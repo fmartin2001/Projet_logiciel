@@ -2,7 +2,7 @@ import os
 import numpy as np
 from PIL import Image
 import pandas as pd
-
+from tensorflow.keras.models import load_model
 
 def charger_dataset(chemin_vers_data, nb_im):
     """
@@ -19,7 +19,7 @@ def charger_dataset(chemin_vers_data, nb_im):
 
     for i in range(nb_im):
         img = Image.open(f'{chemin_vers_data}/{img_list[i]}')
-        img = img.resize((60, 76))
+        img = img.resize((128, 128))
         img = np.array(img)
         img_pixel_list.append(img)
 
@@ -82,6 +82,10 @@ def create_sex_dict(sex):
         dic_sex["Sexe"] = 1
 
     return dic_sex
+def save_encoded_img(img_pixel_list):
+    encoder=load_model("./model/Model/encoder_smallset_512_100_8864")
+    encoded_img = encoder.predict(img_pixel_list)
+    np.save(f"Data/{len(encoded_img)}_encoded_img", encoded_img)
 def filtre(dictionnaire, matrice):
     """
     Parameters:
@@ -142,18 +146,18 @@ def data_img_filtrees(filtre, filtre_sex, nb):
 
 if __name__ == "__main__":
     """
-    nb_img_a_charger = 4
-    img_pixel_list = charger_dataset('./img_align_celeba/img_align_celeba',nb_img_a_charger)
+    nb_img_a_charger = 1000
+    img_pixel_list = charger_dataset('./CelebA/img_align_celeba',nb_img_a_charger)
 
-    chemin = f"./img_align_celeba/img_align_celeba/{nb_img_a_charger}_img_pixel_list"
-
-    if not os.path.isfile(chemin):
-        np.save(chemin, img_pixel_list)
-        """
+    # chemin = f"./CelebA/img_align_celeba/{nb_img_a_charger}_img_pixel_list"
+    #
+    # if not os.path.isfile(chemin):
+    #     np.save(chemin, img_pixel_list)
+    save_encoded_img(img_pixel_list)"""
 
 
     #Charger le data set
-    nb_lignes = 30000 #le nombre d'images maximal à prendre en compte
+    nb_lignes = 1000 #le nombre d'images maximal à prendre en compte
     usecols = [i for i in range(1, 41)]
     mat = np.loadtxt('./CelebA/Anno/list_attr_celeba.txt', skiprows=1, max_rows=nb_lignes, usecols=usecols)
 

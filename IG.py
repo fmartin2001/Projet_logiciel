@@ -23,8 +23,9 @@ from datetime import datetime
 cnt = 1
 
 decoder = load_model("./model/Model/decoder_smallset_512_100_8864",compile=False)
-banque_img = np.load('./Data/20_encoded_img.npy')
-img_recurrente = [[banque_img[19],0]]
+banque_img = np.load('./Data/1000_encoded_img.npy')
+banque_filtre=[]
+index_derniere_img_utilisee=6
 
 class customButton(QPushButton):
     """
@@ -72,7 +73,7 @@ class FEN0(QWidget):
         self.setWindowTitle('Portrait_robot')
         # Créer les widgets pour l'interface graphique
         self.label = QLabel(
-            "Bienvenue dans un générateur de portrait robot ! \nNous vous prions de répondre le plus honnêtement possible afin de faire un protrait robot \nde votre agresseur des plus representatifs. \nLors du choix des visages, nous vous conseillons également de choisir le minimum de propositions. \nVeuillez appuyer sur demarrer quand vous serez prêt.")
+            "Bienvenue dans un générateur de portrait robot ! \nNous vous prions de répondre le plus honnêtement possible afin de faire un portrait robot \nde votre agresseur des plus representatifs. \nLors du choix des visages, nous vous conseillons également de choisir le minimum de propositions. \nVeuillez appuyer sur demarrer quand vous serez prêt.")
         self.image_label = QLabel()
         self.image_pixmap = QPixmap("logo.jpg")
         self.image_label.setPixmap(self.image_pixmap.scaledToWidth(400))
@@ -220,7 +221,7 @@ class FEN2(QWidget):
         nose = ['Oui', 'Non', 'Je ne sais pas']
         hair_colors = ['Brun', 'Gris', 'Blond', 'Noir', 'Chauve', 'Je ne sais pas']
         pilosite = ['Barbe', 'Moustache', 'Ni barbe,ni moustache', 'Je ne sais pas']
-        sex = ['Homme', 'Femme', 'Je ne sais pas']
+        sex = ['Homme', 'Femme']
         lunettes = ['Oui', 'Non', 'Je ne sais pas']
 
         self.sex_combo = QComboBox(self)
@@ -277,7 +278,7 @@ class FEN2(QWidget):
         pilo = self.pilo_combo.currentText()
         if nose != 'Je ne sais pas' or hair_color != 'Je ne sais pas' or sex != 'Je ne sais pas' or lunettes != 'Je ne sais pas' or pilo != 'Je ne sais pas':
 
-            nb_lignes = 30000  # le nombre d'images maximal à prendre en compte = nb d'images encodées dans le fichier
+            nb_lignes = 1000  # le nombre d'images maximal à prendre en compte = nb d'images encodées dans le fichier
             usecols = [i for i in range(1, 41)]
             mat = np.loadtxt('./CelebA/Anno/list_attr_celeba.txt', skiprows=1, max_rows=nb_lignes, usecols=usecols)
 
@@ -289,8 +290,12 @@ class FEN2(QWidget):
             # correspond pas à l'identifiant de l'image mais à la position dans la liste qui commence à 0. Si on veut
             # retrouver l'identifiant, il faut faire +1 à tous les indices
             liste_img_filtre = get.data_img_filtrees(liste_filtree, liste_sex, 100) #100 images dans la liste
-            print(liste_img_filtre)
 
+            global banque_img
+            global banque_filtre
+            for i in range (100) :
+                banque_filtre.append(banque_img[liste_img_filtre[i]])
+            banque_filtre=np.array(banque_filtre)
             self.nextwindow2()
         else:
             msg_err = QMessageBox()
@@ -302,8 +307,8 @@ class FEN2(QWidget):
         """
         Ouvre la fenere suivante (Fenetre 3) et ferme la fenêtre courante.
         """
-        global banque_img
-        self.nextfen = FEN3(self.nom, self.prenom, self.date, banque_img)
+        #global banque_filtre
+        self.nextfen = FEN3(self.nom, self.prenom, self.date, banque_filtre)
         self.nextfen.show()
         self.close()
 
@@ -426,6 +431,7 @@ class FEN3(QWidget):
         """
 
         global decoder
+
         img_list = decoder.predict(self.img_encod)
 
         mat_im.imsave("Img/img1.png", img_list[0])
@@ -450,7 +456,6 @@ class FEN3(QWidget):
         algo_gen()
         """
         global cnt
-        global img_recurrente
 
         list = [self.btn_selection1, self.btn_selection2, self.btn_selection3, self.btn_selection4, self.btn_selection5,
                 self.btn_selection6]
@@ -459,31 +464,10 @@ class FEN3(QWidget):
             if list[i].isChecked():
                 img_choisie.append(self.img_encod[i])
 
-        for j in range (len(img_choisie)):
-            for i in range(len(img_recurrente)):
-                if (img_recurrente[i][0]==img_choisie[j]).all() :
-                    img_recurrente[i][1]=img_recurrente[i][1]+1
-                else :
-                    img_recurrente.append([img_choisie[j],1])
-        max_recurrente=0
-        index=[]
-        ######################################attention il y a un probleme à cette fonction###################################
-        for i in range (len(img_recurrente)):
-            if img_recurrente[i][1]>max_recurrente :
-                max_recurrente=img_recurrente[i][1]
-                if img_recurrente[i][1]==5:
-                    index.append(i)
 
-        if cnt < 10 and max_recurrente < 5:
+        if cnt < 10 :
             cnt = cnt + 1
             self.algo_gen()
-        elif max_recurrente >= 5:
-            msg = QMessageBox()
-            msg.setWindowTitle("Erreur")
-            msg.setText("Vous avez choisi 5 fois ou plus le meme visage pour le valider, veuillez sélectionner celui-ci uniquement et cliquer sur soumettre")
-            msg.exec_()
-            for ind in index :
-                img_recurrente[ind][1]=4
         else:
             msg = QMessageBox()
             msg.setWindowTitle("Erreur")
@@ -507,14 +491,17 @@ class FEN3(QWidget):
                 img_choisie.append(self.img_encod[i])
         # si une seule selectionnée pour augmenter diversité des choix on introduit un autre visage random
         # (on peut modifier mais ca simplifie le code de la suite)
-        global banque_img
+        global banque_filtre
+        global index_derniere_img_utilisee
         if len(img_choisie) == 4:
-            rand = int(np.random.random() * 20)
-            img_choisie.append(banque_img[rand])
+            rang = index_derniere_img_utilisee
+            img_choisie.append(banque_filtre[rang])
+            index_derniere_img_utilisee=index_derniere_img_utilisee+1
+            print(index_derniere_img_utilisee)
         while len(img_choisie) < 4:
-            rand = int(np.random.random() * 20)
-            img_choisie.append(banque_img[rand])
-
+            rang = index_derniere_img_utilisee
+            img_choisie.append(banque_filtre[rang])
+            index_derniere_img_utilisee = index_derniere_img_utilisee + 1
         img_choisie = np.asarray(img_choisie)
         #   procede aux mutations et crossing over
         new_img = algo.new_img_generator(img_choisie)
@@ -539,7 +526,16 @@ class FEN3(QWidget):
             if btn.isChecked():
                 cnt = cnt + 1
         if cnt != 0 and cnt != 6:
-            self.nextimg()
+            if cnt<4 :
+                self.nextimg()
+            else :
+                buttonReply = QMessageBox.question(self, 'Avertissement', "Voulez continuer avec autant d'images? \nEn choisissant un grand nombre d'image la recherche sera moins efficace.",
+                                                   QMessageBox.Yes | QMessageBox.No )
+                if buttonReply == QMessageBox.Yes:
+                    self.nextimg()
+                if buttonReply == QMessageBox.No:
+                    print('No clicked.')
+
         else:
             msg = QMessageBox()
             msg.setWindowTitle("Erreur")
@@ -684,7 +680,7 @@ class FEN4(QMainWindow):
             # Sauvegarde de l'image dans le directory
             qimage.save("./img_choisie.png", "PNG", -1)
             # Dessine l'image dans le pdf
-            c.drawInlineImage("./img_choisie.png", 80, 250, height=270, width=480)
+            c.drawInlineImage("./img_choisie.png", 160, 160, height=128, width=128)
             # Enregistrer le PDF et fermer le canvas
             c.save()
 
