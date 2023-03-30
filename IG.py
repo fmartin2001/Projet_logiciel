@@ -280,7 +280,7 @@ class FEN2(QWidget):
 
             nb_lignes = 1000  # le nombre d'images maximal à prendre en compte = nb d'images encodées dans le fichier
             usecols = [i for i in range(1, 41)]
-            mat = np.loadtxt('./CelebA/Anno/list_attr_celeba.txt', skiprows=1, max_rows=nb_lignes, usecols=usecols)
+            mat = np.loadtxt('./Data/list_attr_celeba.txt', skiprows=1, max_rows=nb_lignes, usecols=usecols)
 
             # Créer une liste filtrée en fonction des caractéristiques
             liste_filtree = get.filtre(get.create_dict(nose,hair_color,sex,lunettes,pilo), mat)

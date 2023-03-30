@@ -161,7 +161,7 @@ if __name__ == "__main__":
     # Charger le document contenant le fichier d'attributs
     nb_lignes = 1000 #le nombre d'images maximal à prendre en compte
     usecols = [i for i in range(1, 41)]
-    mat = np.loadtxt('./CelebA/Anno/list_attr_celeba.txt', skiprows=1, max_rows=nb_lignes, usecols=usecols)
+    mat = np.loadtxt('./Data/list_attr_celeba.txt', skiprows=1, max_rows=nb_lignes, usecols=usecols)
 
     #Créer une liste filtrée en fonction des caractéristiques
     liste_filtree = filtre(create_dict("Non", "Blond", "Homme", "Oui", "Barbe"), mat)
