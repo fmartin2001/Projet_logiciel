@@ -22,7 +22,7 @@ from datetime import datetime
 # variables globales : compteur pour l'algo gen et les images choisies
 cnt = 1
 
-decoder = load_model("./model/Model/decoder_smallset_512_100_8864",compile=False)
+decoder = load_model("./Model/decoder_smallset_512_100_8864",compile=False)
 banque_img = np.load('./Data/1000_encoded_img.npy')
 banque_filtre=[]
 index_derniere_img_utilisee=6
@@ -529,7 +529,7 @@ class FEN3(QWidget):
             if cnt<4 :
                 self.nextimg()
             else :
-                buttonReply = QMessageBox.question(self, 'Avertissement', "Voulez continuer avec autant d'images? \nEn choisissant un grand nombre d'image la recherche sera moins efficace.",
+                buttonReply = QMessageBox.question(self, 'Avertissement', "Voulez-vous continuer avec autant d'images? \nEn choisissant un grand nombre d'image la recherche sera moins efficace.",
                                                    QMessageBox.Yes | QMessageBox.No )
                 if buttonReply == QMessageBox.Yes:
                     self.nextimg()

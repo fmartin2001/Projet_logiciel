@@ -83,7 +83,7 @@ def create_sex_dict(sex):
 
     return dic_sex
 def save_encoded_img(img_pixel_list):
-    encoder=load_model("./model/Model/encoder_smallset_512_100_8864")
+    encoder=load_model("./Model/encoder_smallset_512_100_8864",compile=False)
     encoded_img = encoder.predict(img_pixel_list)
     np.save(f"Data/{len(encoded_img)}_encoded_img", encoded_img)
 def filtre(dictionnaire, matrice):
@@ -145,18 +145,20 @@ def data_img_filtrees(filtre, filtre_sex, nb):
     return list_img_filtre[0:nb]
 
 if __name__ == "__main__":
-    """
+
     nb_img_a_charger = 1000
-    img_pixel_list = charger_dataset('./CelebA/img_align_celeba',nb_img_a_charger)
+    img_pixel_list = charger_dataset('./CelebA/Img/img_align_celeba',nb_img_a_charger)
 
-    # chemin = f"./CelebA/img_align_celeba/{nb_img_a_charger}_img_pixel_list"
-    #
-    # if not os.path.isfile(chemin):
-    #     np.save(chemin, img_pixel_list)
-    save_encoded_img(img_pixel_list)"""
+    # Sauvegarder les images en numpy
+    chemin = f"./Data/{nb_img_a_charger}_img_pixel_list"
+    if not os.path.isfile(chemin):
+         np.save(chemin, img_pixel_list)
+
+    # Sauvegarder les images encodées
+    save_encoded_img(img_pixel_list)
 
 
-    #Charger le data set
+    # Charger le document contenant le fichier d'attributs
     nb_lignes = 1000 #le nombre d'images maximal à prendre en compte
     usecols = [i for i in range(1, 41)]
     mat = np.loadtxt('./CelebA/Anno/list_attr_celeba.txt', skiprows=1, max_rows=nb_lignes, usecols=usecols)
@@ -164,7 +166,7 @@ if __name__ == "__main__":
     #Créer une liste filtrée en fonction des caractéristiques
     liste_filtree = filtre(create_dict("Non", "Blond", "Homme", "Oui", "Barbe"), mat)
     #Créer une liste filtrée en fonction du sexe choisi
-    liste_sex = filtre(create_sex_dict("Femme"), mat)
+    liste_sex = filtre(create_sex_dict("Homme"), mat)
 
     #Renvoie une liste des indices des images à prendre dans la liste d'images encodées
     liste_img_filtre = data_img_filtrees(liste_filtree, liste_sex, 100)
