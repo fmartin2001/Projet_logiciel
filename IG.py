@@ -75,7 +75,7 @@ class FEN0(QWidget):
         self.label = QLabel(
             "Bienvenue dans un générateur de portrait robot ! \nNous vous prions de répondre le plus honnêtement possible afin de faire un portrait robot \nde votre agresseur des plus representatifs. \nLors du choix des visages, nous vous conseillons également de choisir le minimum de propositions. \nVeuillez appuyer sur demarrer quand vous serez prêt.")
         self.image_label = QLabel()
-        self.image_pixmap = QPixmap("logo.jpg")
+        self.image_pixmap = QPixmap("logo.png")
         self.image_label.setPixmap(self.image_pixmap.scaledToWidth(400))
         button = QPushButton("Démarrer", self)
         self.nextfen = FEN1()
@@ -88,7 +88,7 @@ class FEN0(QWidget):
         layout.addWidget(button, alignment=Qt.AlignCenter)
         self.setLayout(layout)
         self.move(80, 80)  # position de la fenetre
-        self.setWindowIcon(QIcon('logo.jpg'))
+        self.setWindowIcon(QIcon('logo.png'))
 
     def nextwindow2(self):
         """
@@ -154,7 +154,7 @@ class FEN1(QWidget):
         self.move(100, 100)  # position de la fenetre
         self.setLayout(flo)  # affichage de la grille
         self.setWindowTitle("Coordonnées utilisateur")
-        self.setWindowIcon(QIcon('logo.jpg'))
+        self.setWindowIcon(QIcon('logo.png'))
 
         # rattachement du bouton "soumettre à l'évenement "changer de fenetre" (apres avoir vérifier si les champs n'étaient pas vides)
         self.btn.clicked.connect(self.rempli)
@@ -263,7 +263,7 @@ class FEN2(QWidget):
         layout.addWidget(button, 6, 2)
         layout.addWidget(self.bouton_retour, 7, 2)
         self.setLayout(layout)
-        self.setWindowIcon(QIcon('logo.jpg'))
+        self.setWindowIcon(QIcon('logo.png'))
 
     def submit(self):
         """
@@ -280,7 +280,7 @@ class FEN2(QWidget):
 
             nb_lignes = 1000  # le nombre d'images maximal à prendre en compte = nb d'images encodées dans le fichier
             usecols = [i for i in range(1, 41)]
-            mat = np.loadtxt('./CelebA/Anno/list_attr_celeba.txt', skiprows=1, max_rows=nb_lignes, usecols=usecols)
+            mat = np.loadtxt('./Data/list_attr_celeba.txt', skiprows=1, max_rows=nb_lignes, usecols=usecols)
 
             # Créer une liste filtrée en fonction des caractéristiques
             liste_filtree = get.filtre(get.create_dict(nose,hair_color,sex,lunettes,pilo), mat)
@@ -422,7 +422,7 @@ class FEN3(QWidget):
         self.move(100, 100)  # position
         self.setLayout(self.fen)
         self.setWindowTitle("choix du portrait")
-        self.setWindowIcon(QIcon('logo.jpg'))
+        self.setWindowIcon(QIcon('logo.png'))
 
     def gen_premieres_img(self):
         """
@@ -529,7 +529,7 @@ class FEN3(QWidget):
             if cnt<4 :
                 self.nextimg()
             else :
-                buttonReply = QMessageBox.question(self, 'Avertissement', "Voulez continuer avec autant d'images? \nEn choisissant un grand nombre d'image la recherche sera moins efficace.",
+                buttonReply = QMessageBox.question(self, 'Avertissement', "Voulez-vous continuer avec autant d'images? \nEn choisissant un grand nombre d'image la recherche sera moins efficace.",
                                                    QMessageBox.Yes | QMessageBox.No )
                 if buttonReply == QMessageBox.Yes:
                     self.nextimg()
@@ -627,7 +627,7 @@ class FEN4(QMainWindow):
         self.button.clicked.connect(self.save_to_pdf)
 
         self.setWindowTitle("Validation du portrait robot")
-        self.setWindowIcon(QIcon('logo.jpg'))
+        self.setWindowIcon(QIcon('logo.png'))
 
     def save_to_pdf(self):
         """

@@ -149,23 +149,24 @@ if __name__ == "__main__":
     nb_img_a_charger = 1000
     img_pixel_list = charger_dataset('./CelebA/img_align_celeba',nb_img_a_charger)
 
-    # chemin = f"./CelebA/img_align_celeba/{nb_img_a_charger}_img_pixel_list"
-    #
-    # if not os.path.isfile(chemin):
+    # Sauvegarder les images en numpy
+    #chemin = f"./Data/{nb_img_a_charger}_img_pixel_list"
+    #if not os.path.isfile(chemin):
     #     np.save(chemin, img_pixel_list)
+
+    # Sauvegarder les images encodées
     save_encoded_img(img_pixel_list)
-    """
 
 
-    #Charger le data set
+    # Charger le document contenant le fichier d'attributs
     nb_lignes = 1000 #le nombre d'images maximal à prendre en compte
     usecols = [i for i in range(1, 41)]
-    mat = np.loadtxt('./CelebA/Anno/list_attr_celeba.txt', skiprows=1, max_rows=nb_lignes, usecols=usecols)
+    mat = np.loadtxt('./Data/list_attr_celeba.txt', skiprows=1, max_rows=nb_lignes, usecols=usecols)
 
     #Créer une liste filtrée en fonction des caractéristiques
     liste_filtree = filtre(create_dict("Non", "Blond", "Homme", "Oui", "Barbe"), mat)
     #Créer une liste filtrée en fonction du sexe choisi
-    liste_sex = filtre(create_sex_dict("Femme"), mat)
+    liste_sex = filtre(create_sex_dict("Homme"), mat)
 
     #Renvoie une liste des indices des images à prendre dans la liste d'images encodées
     liste_img_filtre = data_img_filtrees(liste_filtree, liste_sex, 100)
