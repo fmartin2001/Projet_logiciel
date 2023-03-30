@@ -150,9 +150,9 @@ if __name__ == "__main__":
     img_pixel_list = charger_dataset('./CelebA/Img/img_align_celeba',nb_img_a_charger)
 
     # Sauvegarder les images en numpy
-    chemin = f"./Data/{nb_img_a_charger}_img_pixel_list"
-    if not os.path.isfile(chemin):
-         np.save(chemin, img_pixel_list)
+    #chemin = f"./Data/{nb_img_a_charger}_img_pixel_list"
+    #if not os.path.isfile(chemin):
+    #     np.save(chemin, img_pixel_list)
 
     # Sauvegarder les images encodées
     save_encoded_img(img_pixel_list)
