@@ -83,7 +83,7 @@ def create_sex_dict(sex):
 
     return dic_sex
 def save_encoded_img(img_pixel_list):
-    encoder=load_model("./model/Model/encoder_smallset_512_100_8864")
+    encoder=load_model("./model/Model/encoder_smallset_1024_100_8864")
     encoded_img = encoder.predict(img_pixel_list)
     np.save(f"Data/{len(encoded_img)}_encoded_img", encoded_img)
 def filtre(dictionnaire, matrice):
@@ -145,7 +145,7 @@ def data_img_filtrees(filtre, filtre_sex, nb):
     return list_img_filtre[0:nb]
 
 if __name__ == "__main__":
-    """
+
     nb_img_a_charger = 1000
     img_pixel_list = charger_dataset('./CelebA/img_align_celeba',nb_img_a_charger)
 
@@ -153,7 +153,8 @@ if __name__ == "__main__":
     #
     # if not os.path.isfile(chemin):
     #     np.save(chemin, img_pixel_list)
-    save_encoded_img(img_pixel_list)"""
+    save_encoded_img(img_pixel_list)
+    """
 
 
     #Charger le data set
@@ -168,4 +169,4 @@ if __name__ == "__main__":
 
     #Renvoie une liste des indices des images à prendre dans la liste d'images encodées
     liste_img_filtre = data_img_filtrees(liste_filtree, liste_sex, 100)
-    print(liste_img_filtre)
+    print(liste_img_filtre)"""

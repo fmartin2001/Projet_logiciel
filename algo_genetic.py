@@ -27,15 +27,21 @@ import copy
 #                         if p < proba:
 #                             encoded_img_list_copy[i, j, k, l] = 1 - encoded_img_list[i, j, k, l]
 #     return encoded_img_list_copy
+# Mutation function
 def mutation(P, Tm):
     n, m = P.shape
     P_copy = np.copy(P)
+    compt=0
     for i in range(n):
         for j in range(m):
             p = np.random.random()
             if p < Tm:
                 P_copy[i, j] = 1- P[i, j]
+                compt+=1
+            if compt==30:
+                j=m
     return P_copy
+
 
 def crossing_over_temp(P, Tc):
     new_P = np.copy(P)
