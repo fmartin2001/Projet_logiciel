@@ -409,7 +409,7 @@ class FEN3(QWidget):
         self.fen.addWidget(self.label6, 3, 3, alignment=Qt.AlignCenter)
         self.fen.addWidget(self.btn_selection6, 4, 3, alignment=Qt.AlignCenter)
 
-        self.fen.addWidget(QLabel("Sélectionnez le ou les deux visages qui ressemble(nt) le plus à votre agresseur"), 6,
+        self.fen.addWidget(QLabel("Sélectionnez le ou les deux visages qui ressemble(nt) le plus à votre agresseur(e)"), 6,
                            2, alignment=Qt.AlignCenter)
         self.fen.addWidget(self.bt1, 6, 3, alignment=Qt.AlignRight)
         self.fen.addWidget(self.bt2, 6, 1, alignment=Qt.AlignLeft)
@@ -421,7 +421,7 @@ class FEN3(QWidget):
         self.resize(900, 600)  # taille
         self.move(100, 100)  # position
         self.setLayout(self.fen)
-        self.setWindowTitle("choix du portrait")
+        self.setWindowTitle("Choix du portrait")
         self.setWindowIcon(QIcon('logo.png'))
 
     def gen_premieres_img(self):
