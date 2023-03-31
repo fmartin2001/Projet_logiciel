@@ -22,7 +22,7 @@ from datetime import datetime
 # variables globales : compteur pour l'algo gen et les images choisies
 cnt = 1
 
-decoder = load_model("./model/Model/decoder_smallset_1024_100_8864",compile=False)
+decoder = load_model("./Model/decoder_smallset_1024_100_8864",compile=False)
 banque_img = np.load('./Data/1000_encoded_img.npy')
 banque_filtre=[]
 index_derniere_img_utilisee=6
