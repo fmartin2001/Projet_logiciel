@@ -70,10 +70,10 @@ class FEN0(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('Portrait_robot')
+        self.setWindowTitle('Portrait robot')
         # Créer les widgets pour l'interface graphique
         self.label = QLabel(
-            "Bienvenue dans un générateur de portrait robot ! \nNous vous prions de répondre le plus honnêtement possible afin de faire un portrait robot \nde votre agresseur des plus representatifs. \nLors du choix des visages, nous vous conseillons également de choisir le minimum de propositions. \nVeuillez appuyer sur demarrer quand vous serez prêt.")
+            "Bienvenue dans un générateur de portrait robot ! \nNous vous prions de répondre le plus honnêtement possible afin de faire un portrait robot \nde votre agresseur des plus representatifs. \nLors du choix des visages, nous vous conseillons également de choisir le minimum de propositions. \nVeuillez appuyer sur démarrer quand vous serez prêt.")
         self.image_label = QLabel()
         self.image_pixmap = QPixmap("logo.png")
         self.image_label.setPixmap(self.image_pixmap.scaledToWidth(400))
