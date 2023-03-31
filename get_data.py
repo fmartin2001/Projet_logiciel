@@ -170,4 +170,4 @@ if __name__ == "__main__":
 
     #Renvoie une liste des indices des images à prendre dans la liste d'images encodées
     liste_img_filtre = data_img_filtrees(liste_filtree, liste_sex, 100)
-    print(liste_img_filtre)"""
+    print(liste_img_filtre)
