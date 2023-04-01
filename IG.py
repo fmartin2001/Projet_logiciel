@@ -22,10 +22,11 @@ from datetime import datetime
 # variables globales : compteur pour l'algo gen et les images choisies
 cnt = 1
 
-decoder = load_model("./Model/decoder_smallset_1024_100_8864",compile=False)
-banque_img = np.load('./Data/1000_encoded_img.npy')
-banque_filtre=[]
-index_derniere_img_utilisee=6
+decoder = load_model("./Model/decoder_smallset_1024_100_8864", compile=False)  # decoder
+banque_img = np.load('./Data/1000_encoded_img.npy')  # Banque d'image encodées
+banque_filtre = []  # Images encodées correspondant aux caracteristiques choisie en fen2
+index_derniere_img_utilisee = 6  # Pour ne pas rechoisir les mêmes images plusieurs fois
+
 
 class customButton(QPushButton):
     """
@@ -105,13 +106,13 @@ class FEN1(QWidget):
     Si un champs est vide au moment de la validation, un message d'erreur apparait
     Attributes:
         e1 (QLineEdit) : champs pour rentrer le nom
-        e2 (QLineEdit) : champs pour rentrer le prenom
+        e2 (QLineEdit) : champs pour rentrer le prénom
         e3 (QLineEdit) : champs pour rentrer la date de naissance
-        btn (QPushButton) : bouton "soumettre" pour passer à la fenetre suivante
-        nextfen (QWidget) : la fenetre suivante
+        btn (QPushButton) : bouton "soumettre" pour passer à la fenêtre suivante
+        nextfen (QWidget) : la fenêtre suivante
     Methods :
-         nextwindow(self) : passe à la fenetre suivante (nextfen)
-         rempli(self) : vérifie que l'utilisateur est renseigné le nom prenom et la date demandés
+         nextwindow(self) : passe à la fenêtre suivante (nextfen)
+         rempli(self) : vérifie que l'utilisateur est renseigné le nom prénom et la date de naissance
     """
 
     def __init__(self, parent=None):
@@ -129,7 +130,7 @@ class FEN1(QWidget):
         self.e1.setAlignment(Qt.AlignRight)
         self.e1.setFont(QFont("Helvetica", 10))
 
-        # permet de rentrer le prenom
+        # permet de rentrer le prénom
         self.e2.setMaxLength(20)
         self.e2.setAlignment(Qt.AlignRight)
         self.e2.setFont(QFont("Helevetica", 10))
@@ -140,7 +141,7 @@ class FEN1(QWidget):
 
         self.nextfen = FEN2(self.e1, self.e2, self.e3)  # sa fenetre suivante est la fenetre 2
 
-        # bouton "soumettre" pour passer à la fenetre suivante et sauvegarder les données entrées
+        # bouton "soumettre" pour passer à la fenêtre suivante et sauvegarder les données entrées
         self.btn.setText("Soumettre")
 
         # Grille de mise en page
@@ -150,13 +151,13 @@ class FEN1(QWidget):
         flo.addRow("Date de naissance", self.e3)
         flo.addWidget(self.btn)
 
-        self.resize(500, 220)  # taille de la fenetre
-        self.move(100, 100)  # position de la fenetre
+        self.resize(500, 220)  # taille de la fenêtre
+        self.move(100, 100)  # position de la fenêtre
         self.setLayout(flo)  # affichage de la grille
         self.setWindowTitle("Coordonnées utilisateur")
         self.setWindowIcon(QIcon('logo.png'))
 
-        # rattachement du bouton "soumettre à l'évenement "changer de fenetre" (apres avoir vérifier si les champs n'étaient pas vides)
+        # rattachement du bouton "soumettre à l'évenement "changer de fenêtre" (après avoir vérifié si les champs n'étaient pas vides)
         self.btn.clicked.connect(self.rempli)
 
     def rempli(self):
@@ -183,16 +184,17 @@ class FEN1(QWidget):
 
 class FEN2(QWidget):
     """
-        Fenetre pour rentrer les caractéristiques de l'agresseur
+        Fenêtre pour rentrer les caractéristiques de l'agresseur
         Attributes:
-            label1 (QLabel) : "Avait-il/elle un gros nez?"
+            label1 (QLabel) : "Sexe"
             label2 (QLabel) : "Couleur des cheveux"
-            label3 (QLabel) : "Sexe"
+            label3 (QLabel) : "Pilosité faciale"
             label4 (QLabel) : "Avait-il/elle des lunettes?"
+            label5 (QLabel) : "Avait-il/elle un gros nez?"
             Combo boxes (nose,hair_combo,sexe_combo,lunettes) respectivement les choix pour chaque label
-            bouton_retour (QPushButton) : bouton "retour" pour revenir à la fenetre precedente
-            nextfen (QWidget) : la fenetre suivante
-            firstwindow (QWidget) : la fenetre precedente
+            bouton_retour (QPushButton) : bouton "retour" pour revenir à la fenêtre précédente
+            nextfen (QWidget) : la fenêtre suivante
+            firstwindow (QWidget) : la fenêtre précédente
         Methods :
              nextwindow2(self) : passe à la fenetre suivante (nextfen)
              backwindow(self) : revient à la fenetre precedente
@@ -270,6 +272,9 @@ class FEN2(QWidget):
         Fonction appelée lorsque l'utilisateur clique sur le bouton "button" pour soumettre.
         Si au moins une caractéristique est choisie, la fonction nextwindow2 est appelée.
         Sinon, un message d'erreur apparaît.
+        Permet aussi d'établir une sous base d'images encodées qui correspondent aux caractéristiques sélectionnées
+
+        Utilise les variables globales banque_img et banque_filtre
         """
         nose = self.nose.currentText()
         hair_color = self.hair_combo.currentText()
@@ -280,22 +285,23 @@ class FEN2(QWidget):
 
             nb_lignes = 1000  # le nombre d'images maximal à prendre en compte = nb d'images encodées dans le fichier
             usecols = [i for i in range(1, 41)]
-            mat = np.loadtxt('./Data/list_attr_celeba.txt', skiprows=1, max_rows=nb_lignes, usecols=usecols)
+            mat = np.loadtxt('./Data/list_attr_celeba.txt', skiprows=1, max_rows=nb_lignes,
+                             usecols=usecols)  # matrice contenant les attributs de chaque visage
 
             # Créer une liste filtrée en fonction des caractéristiques
-            liste_filtree = get.filtre(get.create_dict(nose,hair_color,sex,lunettes,pilo), mat)
+            liste_filtree = get.filtre(get.create_dict(nose, hair_color, sex, lunettes, pilo), mat)
             # Créer une liste filtrée en fonction du sexe choisi
             liste_sex = get.filtre(get.create_sex_dict(sex), mat)
             # Renvoie une liste des indices des images à prendre dans la liste d'images encodées Attention : ne
             # correspond pas à l'identifiant de l'image mais à la position dans la liste qui commence à 0. Si on veut
             # retrouver l'identifiant, il faut faire +1 à tous les indices
-            liste_img_filtre = get.data_img_filtrees(liste_filtree, liste_sex, 100) #100 images dans la liste
+            liste_img_filtre = get.data_img_filtrees(liste_filtree, liste_sex, 100)  # 100 images dans la liste
 
             global banque_img
             global banque_filtre
-            for i in range (100) :
+            for i in range(100):
                 banque_filtre.append(banque_img[liste_img_filtre[i]])
-            banque_filtre=np.array(banque_filtre)
+            banque_filtre = np.array(banque_filtre)
             self.nextwindow2()
         else:
             msg_err = QMessageBox()
@@ -305,16 +311,16 @@ class FEN2(QWidget):
 
     def nextwindow2(self):
         """
-        Ouvre la fenere suivante (Fenetre 3) et ferme la fenêtre courante.
+        Ouvre la fenêtre suivante (Fenetre 3) et ferme la fenêtre courante.
+        Utilise la variable globale banque_filtre
         """
-        #global banque_filtre
         self.nextfen = FEN3(self.nom, self.prenom, self.date, banque_filtre)
         self.nextfen.show()
         self.close()
 
     def backwindow(self):
         """
-        Ferme la fenêtre courante et ouvre la précédente (Fenetre 1)
+        Ferme la fenêtre courante et ouvre la précédente (Fenêtre 1)
         """
         self.close()
         self.first_window = FEN1()
@@ -323,9 +329,9 @@ class FEN2(QWidget):
 
 class FEN3(QWidget):
     """
-            Fenetre pour choisir récursivement l'image la plus ressemblante à l'agresseur
+            Fenêtre pour choisir récursivement l'image la plus ressemblante à l'agresseur
             Attributes:
-                img_encod (ndarray) : liste d'image encodées
+                img_encod (ndarray) : liste d'images encodées
                 pour i de 1 à 6 :
                 img{i} (QPixmap) : l'image décodée d'un visage
                 label{i} (QLabel) : le label comportant l'image
@@ -334,16 +340,18 @@ class FEN3(QWidget):
                 btn2 (QPushButton) : bouton "valider" pour valider le visage sélectionné passer à la fenetre suivante
                 fen (QGridLayout) : grille pour disposer tous les éléments
                 nextfen (QWidget) : la fenetre suivante
+                nom (String) : le nom de l'utilisateur
+                prénom (String) : le prénom de l'utilisateur
+                date (String) : la date de naissance
             Methods :
                 __init__ (self,img) : constructeur qui prend une liste d'images encodées en argument
                  gen_premieres_img (self) : decode des images et les enregistre
-                 selection1_final (self) : verifie qu'une seule image soit choisie
+                 selection1_final (self) : vérifie qu'une seule image soit choisie
                  selection_1vs5 (self) : vérifie qu'il un nombre d'images sélectionnées entre 1 et 5 inclu
                  nextimg (self) : renouvelle les images en passant par algo_gen si le nombre d'itération n'excède pas 10
                  algo_gen (self) : renouvelle les images
-                 next_window (self) : passe à la fenetre suivante
-            See Also :
-                algo_gen.py
+                 next_window (self) : passe à la fenêtre suivante
+
             """
 
     def __init__(self, nom, prenom, date, img):
@@ -409,12 +417,13 @@ class FEN3(QWidget):
         self.fen.addWidget(self.label6, 3, 3, alignment=Qt.AlignCenter)
         self.fen.addWidget(self.btn_selection6, 4, 3, alignment=Qt.AlignCenter)
 
-        self.fen.addWidget(QLabel("Sélectionnez le ou les deux visages qui ressemble(nt) le plus à votre agresseur(e)"), 6,
+        self.fen.addWidget(QLabel("Sélectionnez le ou les deux visages qui ressemble(nt) le plus à votre agresseur(e)"),
+                           6,
                            2, alignment=Qt.AlignCenter)
         self.fen.addWidget(self.bt1, 6, 3, alignment=Qt.AlignRight)
         self.fen.addWidget(self.bt2, 6, 1, alignment=Qt.AlignLeft)
 
-        # Attribution au boutons de validation les evenements correspondants
+        # Attribution au boutons de validation les évenements correspondants
         self.bt1.clicked.connect(self.selection1vs5)
         self.bt2.clicked.connect(self.selection1_final)
 
@@ -445,12 +454,13 @@ class FEN3(QWidget):
         """Gère le renouvellement des images de la fenetre et appelle l'algo genetique si besoin
 
         la fonction compte le nombre d'itération de l'algo_gen
-        mais aussi le nombre de fois où une image est choisie
 
-        si le nombre d'itération est superieur à 10, ou le nombre de fois ou une image a été choisie supérieure à 5,
+        si le nombre d'itération est superieur à 25,
         un message d'erreur apparait et l'algo génétique s'arrête
 
         sinon appelle l'algo génétique
+
+        Utilise la variable globale cnt qui est incrémenté de 1 à chaque passage
 
         see also :
         algo_gen()
@@ -460,12 +470,12 @@ class FEN3(QWidget):
         list = [self.btn_selection1, self.btn_selection2, self.btn_selection3, self.btn_selection4, self.btn_selection5,
                 self.btn_selection6]
         img_choisie = []
+        # On regarde combien de boutons sont sélectionnés
         for i in range(len(list)):
             if list[i].isChecked():
                 img_choisie.append(self.img_encod[i])
 
-
-        if cnt < 10 :
+        if cnt < 25:
             cnt = cnt + 1
             self.algo_gen()
         else:
@@ -480,11 +490,14 @@ class FEN3(QWidget):
         Envoie sous forme de liste les images selectionnees par l'utilisateur à l'algorithme genetique
         Actualise img1.jpg, img2.jpg, img3.jpg, img4.jpg
         Relance la fenetre
+        Le coût de l'algorithme est remplacé par le choix de l'utilisateur
+        On procéde à des mutations sur les images choisies
+        On recrée une population avec les images choisies, les images modifiées et d'autres images "random"
         """
         list = [self.btn_selection1, self.btn_selection2, self.btn_selection3, self.btn_selection4, self.btn_selection5,
                 self.btn_selection6]
         img_choisie = []
-        # on prend celles qui ont le cout le plus faible soit celles choisies
+        # on prend celles qui ont le coût le plus faible soit celles choisies
         for i in range(len(list)):
 
             if list[i].isChecked():
@@ -496,17 +509,21 @@ class FEN3(QWidget):
         if len(img_choisie) == 4:
             rang = index_derniere_img_utilisee
             img_choisie.append(banque_filtre[rang])
-            index_derniere_img_utilisee=index_derniere_img_utilisee+1
+            index_derniere_img_utilisee = index_derniere_img_utilisee + 1
             print(index_derniere_img_utilisee)
         while len(img_choisie) < 4:
             rang = index_derniere_img_utilisee
             img_choisie.append(banque_filtre[rang])
             index_derniere_img_utilisee = index_derniere_img_utilisee + 1
         img_choisie = np.asarray(img_choisie)
-        #   procede aux mutations et crossing over
-        new_img = algo.new_img_generator(img_choisie)
-        new_img = np.asarray(new_img)
-        #   ouverture de la nouvelle fenetre == nouveau calcul du cout
+        #   procéde aux mutations et crossing over
+        if (cnt < 10):
+            new_img = algo.new_img_generator_debut(img_choisie)
+            new_img = np.asarray(new_img)
+        else:
+            new_img = algo.new_img_generator_fin(img_choisie)
+            new_img = np.asarray(new_img)
+        #   ouverture de la nouvelle fenêtre == nouveau calcul du cout
         self.newfen = FEN3(self.nom, self.prenom, self.date, new_img)
         self.newfen.show()
 
@@ -526,11 +543,12 @@ class FEN3(QWidget):
             if btn.isChecked():
                 cnt = cnt + 1
         if cnt != 0 and cnt != 6:
-            if cnt<4 :
+            if cnt < 4:
                 self.nextimg()
-            else :
-                buttonReply = QMessageBox.question(self, 'Avertissement', "Voulez-vous continuer avec autant d'images? \nEn choisissant un grand nombre d'image la recherche sera moins efficace.",
-                                                   QMessageBox.Yes | QMessageBox.No )
+            else:
+                buttonReply = QMessageBox.question(self, 'Avertissement',
+                                                   "Voulez-vous continuer avec autant d'images? \nEn choisissant un grand nombre d'image la recherche sera moins efficace.",
+                                                   QMessageBox.Yes | QMessageBox.No)
                 if buttonReply == QMessageBox.Yes:
                     self.nextimg()
                 if buttonReply == QMessageBox.No:
@@ -556,7 +574,7 @@ class FEN3(QWidget):
         for btn in list:
             if btn.isChecked():
                 cnt = cnt + 1
-                btn_selected = int(np.where(list == btn)[0] + 1)  #numéro d'image correspondant à l'image choisie
+                btn_selected = int(np.where(list == btn)[0] + 1)  # numéro d'image correspondant à l'image choisie
                 name = "img" + str(btn_selected)
                 img_selected = getattr(self, name)  # image correspondant a la photo choisie
 
@@ -569,7 +587,7 @@ class FEN3(QWidget):
             msg.exec_()
 
     def nextwindow(self, img):
-        """ Renvoie sur la fenetre suivante (Fenêtre 4) et ferme la fenêtre courante
+        """ Renvoie sur la fenêtre suivante (Fenêtre 4) et ferme la fenêtre courante
         Parameters:
             img (QPixmap): Image finale choisie par l'utilisateur
         """
@@ -581,15 +599,20 @@ class FEN3(QWidget):
 
 class FEN4(QMainWindow):
     """
-        Fenetre pour valider son choix et générer un pdf
+        Fenêtre pour valider son choix et générer un pdf
         Attributes:
             label (QLabel) : décrit le role de la fenetre
-            image_label (QLabel) : contient l'image choisie
+            label2 (QLabel) : décrit comment remplir le champs text_edit
+            text_edit (QTextEdit) : Vérification des noms et prénoms
+            image_pixmap (DArray) : L'image sélectionnée
             button (QPushButton) : bouton pour fermer le logiciel et générer un pdf en sortie
-            A FINIR
+            nom (String) : le nom de l'utilisateur
+            prenom (String) : le prénom de l'utilisateur
+            date (String) : la date de naissance
         Methods :
             __init__ (self,image) : constructeur qui prend l'image choisie dans la page precedente en argument
-             save_to_pdf (self) : genere un pdf de 2 pages qui permettent d'enregistrer le portrait robot avec et sans l'identité de la victime
+             save_to_pdf (self) : génère un pdf de 2 pages qui permettent d'enregistrer le portrait robot avec et sans l'identité de la victime
+            vérification (self) : vérifie les nom et prénom entrés
         """
 
     def __init__(self, nom, prenom, date, image):
@@ -697,12 +720,12 @@ class FEN4(QMainWindow):
     def verification(self, verif_, text_):
         """
         Compare le contenu de deux chaînes de caractères.Si le contenu est le même, renvoie True. Sinon, un message d'erreur apparaît et la fonction renvoie False.
-            Parameters:
-                verif_ (str)
-                text_ (str)
-            Return:
-                return (bool):
-            """
+        Parameters:
+            verif_ (str)
+            text_ (str)
+        Return:
+            return (bool):
+        """
         if verif_ != text_:
             msg = QMessageBox()
             msg.setWindowTitle("Erreur")
@@ -715,11 +738,6 @@ class FEN4(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    # win = FEN1()
-    # ndow = FEN3()
-    # win.show()
-    # window.show()
-    # liste_img_encoded = np.load("Data/20_encoded_img.npy")
     main_window = FEN0()
     main_window.show()
     sys.exit(app.exec_())
