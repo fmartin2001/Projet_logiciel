@@ -497,6 +497,7 @@ class FEN3(QWidget):
         list = [self.btn_selection1, self.btn_selection2, self.btn_selection3, self.btn_selection4, self.btn_selection5,
                 self.btn_selection6]
         img_choisie = []
+        len_img=len(img_choisie)
         # on prend celles qui ont le coût le plus faible soit celles choisies
         for i in range(len(list)):
 
@@ -518,10 +519,10 @@ class FEN3(QWidget):
         img_choisie = np.asarray(img_choisie)
         #   procéde aux mutations et crossing over
         if (cnt < 10):
-            new_img = algo.new_img_generator_debut(img_choisie)
+            new_img = algo.new_img_generator_debut(img_choisie,len_img)
             new_img = np.asarray(new_img)
         else:
-            new_img = algo.new_img_generator_fin(img_choisie)
+            new_img = algo.new_img_generator_fin(img_choisie,len_img)
             new_img = np.asarray(new_img)
         #   ouverture de la nouvelle fenêtre == nouveau calcul du cout
         self.newfen = FEN3(self.nom, self.prenom, self.date, new_img)
