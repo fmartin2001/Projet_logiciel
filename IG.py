@@ -276,7 +276,7 @@ class FEN2(QWidget):
         sex = self.sex_combo.currentText()
         lunettes = self.lunettes.currentText()
         pilo = self.pilo_combo.currentText()
-        if nose != 'Je ne sais pas' or hair_color != 'Je ne sais pas' or sex != 'Je ne sais pas' or lunettes != 'Je ne sais pas' or pilo != 'Je ne sais pas':
+        if nose != 'Je ne sais pas' or hair_color != 'Je ne sais pas' or lunettes != 'Je ne sais pas' or pilo != 'Je ne sais pas':
 
             nb_lignes = 1000  # le nombre d'images maximal à prendre en compte = nb d'images encodées dans le fichier
             usecols = [i for i in range(1, 41)]
