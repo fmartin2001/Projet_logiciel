@@ -31,7 +31,7 @@ def charger_dataset(chemin_vers_data, nb_im):
 
 def create_dict(nose, hair_color, sex, lunettes, pilo):
     """
-    Crée un dictionnaire en fonction des réponses de l'utilisateur (utilisé pour filtrer)
+        Crée un dictionnaire en fonction des réponses de l'utilisateur (utilisé pour filtrer)
     Arguments : 
         Nose, hair_color, sex, lunettes, pilo (str) : résultats des initiaux choix de l'utilisateur concernant ces caractéristiques
     Return : 
@@ -76,7 +76,7 @@ def create_dict(nose, hair_color, sex, lunettes, pilo):
 
 def create_sex_dict(sex):
     """
-    Crée un dictionnaire selon le sexe pour filtrer ensuite
+        Crée un dictionnaire selon le sexe pour filtrer ensuite
     Arguments : 
         sex (str) : sexe à partir duquel on veut obtenir le dictionnaire de sortie
     Return : 
@@ -92,9 +92,10 @@ def create_sex_dict(sex):
     return dic_sex
 def save_encoded_img(img_pixel_list):
     """
-    Enregistre les images encodées
+        Enregistre les images encodées
     Parameters : 
         img_pixel_list (numpy.array) : images à enregistrer
+    Return : aucun
     """
     encoder=load_model("./model/Model/encoder_smallset_1024_100_8864")
     encoded_img = encoder.predict(img_pixel_list)
@@ -149,7 +150,7 @@ def filtre(dictionnaire, matrice):
 
 def data_img_filtrees(filtre, filtre_sex, nb):
     """
-    On prend les img filtrées. S'il n'y en a pas assez, on complete avec des images random du meme sexe jusqu'a avoir nb images dans la liste
+        On prend les img filtrées. S'il n'y en a pas assez, on complete avec des images random du meme sexe jusqu'a avoir nb images dans la liste
     Arguments : 
        filtre (numpy.array) : liste des images filtrées pour le moment, avec les critères de base
        filtre_sex (nympy.array) : liste d'images triées seulement selon le sexe
