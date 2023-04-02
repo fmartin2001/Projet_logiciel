@@ -77,6 +77,10 @@ def create_dict(nose, hair_color, sex, lunettes, pilo):
 def create_sex_dict(sex):
     """
     Crée un dictionnaire selon le sexe pour filtrer ensuite
+    Arguments : 
+        sex (str) : sexe à partir duquel on veut obtenir le dictionnaire de sortie
+    Return : 
+        dic_sex (dict) : dictionnaire qui associe le string du sexe à la valeur -1 si c'est une femme ou 1 si c'est un homme
     """
 
     dic_sex = {}
@@ -87,9 +91,15 @@ def create_sex_dict(sex):
 
     return dic_sex
 def save_encoded_img(img_pixel_list):
+    """
+    Enregistre les images encodées
+    Parameters : 
+        img_pixel_list (numpy.array) : images à enregistrer
+    """
     encoder=load_model("./model/Model/encoder_smallset_1024_100_8864")
     encoded_img = encoder.predict(img_pixel_list)
     np.save(f"Data/{len(encoded_img)}_encoded_img", encoded_img)
+    
 def filtre(dictionnaire, matrice):
     """
     Parameters:
@@ -139,7 +149,13 @@ def filtre(dictionnaire, matrice):
 
 def data_img_filtrees(filtre, filtre_sex, nb):
     """
-    on prend les img filtrées. S'il n'y en a pas assez, on complete avec des images random du meme sexe jusqu'a avoir nb images dans la liste
+    On prend les img filtrées. S'il n'y en a pas assez, on complete avec des images random du meme sexe jusqu'a avoir nb images dans la liste
+    Arguments : 
+       filtre (numpy.array) : liste des images filtrées pour le moment, avec les critères de base
+       filtre_sex (nympy.array) : liste d'images triées seulement selon le sexe
+       nb (str) : nombre d'imges à atteindre
+    Return : 
+        list_img_filtre[0:nb] (numpy.array) : liste du bon nombre d'images
     """
     list_img_filtre = filtre.copy()
     if len(filtre) < nb:
