@@ -72,7 +72,7 @@ def create_dict(nose, hair_color, sex, lunettes, pilo):
 
 def create_sex_dict(sex):
     """
-    crée un dictionnaire selon le sexe pour filtrer ensuite
+    Crée un dictionnaire selon le sexe pour filtrer ensuite
     """
 
     dic_sex = {}
@@ -156,6 +156,7 @@ if __name__ == "__main__":
 
     # Sauvegarder les images encodées
     save_encoded_img(img_pixel_list)
+    """
 
 
     # Charger le document contenant le fichier d'attributs
@@ -170,4 +171,4 @@ if __name__ == "__main__":
 
     #Renvoie une liste des indices des images à prendre dans la liste d'images encodées
     liste_img_filtre = data_img_filtrees(liste_filtree, liste_sex, 100)
-    print(liste_img_filtre)
+    print(liste_img_filtre)"""

@@ -22,15 +22,15 @@ from datetime import datetime
 # variables globales : compteur pour l'algo gen et les images choisies
 cnt = 1
 
-decoder = load_model("./Model/decoder_smallset_1024_100_8864", compile=False)  # decoder
-banque_img = np.load('./Data/1000_encoded_img.npy')  # Banque d'image encodées
+decoder = load_model("./Model/decoder_smallset_1024_100_8864/",compile=False)  # decoder
+banque_img =np.load('./Data/1000_encoded_img.npy')  # Banque d'image encodées
 banque_filtre = []  # Images encodées correspondant aux caracteristiques choisie en fen2
 index_derniere_img_utilisee = 6  # Pour ne pas rechoisir les mêmes images plusieurs fois
 
 
 class customButton(QPushButton):
     """
-    Redefinie le widget QPushButton pour sélectionner des visages
+        Redefinie le widget QPushButton pour sélectionner des visages
     Attributes:
         Aucun attribut en plus mais définition d'une taille fixe et d'une couleur de fond
 
@@ -60,7 +60,7 @@ class customButton(QPushButton):
 
 class FEN0(QWidget):
     """
-    Fenetre de presentation du logiciel
+        Fenetre de presentation du logiciel
     Attributes:
         Label (QLabel) : phrase d'introduction
         image_label (QLabel) : le logo du logiciel
@@ -101,9 +101,9 @@ class FEN0(QWidget):
 
 class FEN1(QWidget):
     """
-    Fenetre pour rentrer et sauvegarder les informations de l'utilisateur
-    Elle contient trois champs à remplir
-    Si un champs est vide au moment de la validation, un message d'erreur apparait
+        Fenetre pour rentrer et sauvegarder les informations de l'utilisateur
+        Elle contient trois champs à remplir
+        Si un champs est vide au moment de la validation, un message d'erreur apparait
     Attributes:
         e1 (QLineEdit) : champs pour rentrer le nom
         e2 (QLineEdit) : champs pour rentrer le prénom
@@ -184,7 +184,7 @@ class FEN1(QWidget):
 
 class FEN2(QWidget):
     """
-        Fenêtre pour rentrer les caractéristiques de l'agresseur
+            Fenêtre pour rentrer les caractéristiques de l'agresseur
         Attributes:
             label1 (QLabel) : "Sexe"
             label2 (QLabel) : "Couleur des cheveux"
@@ -329,30 +329,30 @@ class FEN2(QWidget):
 
 class FEN3(QWidget):
     """
-            Fenêtre pour choisir récursivement l'image la plus ressemblante à l'agresseur
-            Attributes:
-                img_encod (ndarray) : liste d'images encodées
-                pour i de 1 à 6 :
-                img{i} (QPixmap) : l'image décodée d'un visage
-                label{i} (QLabel) : le label comportant l'image
-                btn_selection{i} (CustomButton) : bouton pour sélectionner l'image
-                btn1 (QPushButton) : bouton "continuer" pour relancer la fenetre avec de nouvelles images
-                btn2 (QPushButton) : bouton "valider" pour valider le visage sélectionné passer à la fenetre suivante
-                fen (QGridLayout) : grille pour disposer tous les éléments
-                nextfen (QWidget) : la fenetre suivante
-                nom (String) : le nom de l'utilisateur
-                prénom (String) : le prénom de l'utilisateur
-                date (String) : la date de naissance
-            Methods :
-                __init__ (self,img) : constructeur qui prend une liste d'images encodées en argument
-                 gen_premieres_img (self) : decode des images et les enregistre
-                 selection1_final (self) : vérifie qu'une seule image soit choisie
-                 selection_1vs5 (self) : vérifie qu'il un nombre d'images sélectionnées entre 1 et 5 inclu
-                 nextimg (self) : renouvelle les images en passant par algo_gen si le nombre d'itération n'excède pas 10
-                 algo_gen (self) : renouvelle les images
-                 next_window (self) : passe à la fenêtre suivante
+        Fenêtre pour choisir récursivement l'image la plus ressemblante à l'agresseur
+    Attributes:
+        img_encod (ndarray) : liste d'images encodées
+        pour i de 1 à 6 :
+        img{i} (QPixmap) : l'image décodée d'un visage
+        label{i} (QLabel) : le label comportant l'image
+        btn_selection{i} (CustomButton) : bouton pour sélectionner l'image
+        btn1 (QPushButton) : bouton "continuer" pour relancer la fenetre avec de nouvelles images
+        btn2 (QPushButton) : bouton "valider" pour valider le visage sélectionné passer à la fenetre suivante
+        fen (QGridLayout) : grille pour disposer tous les éléments
+        nextfen (QWidget) : la fenetre suivante
+        nom (String) : le nom de l'utilisateur
+        prénom (String) : le prénom de l'utilisateur
+        date (String) : la date de naissance
+    Methods :
+        __init__ (self,img) : constructeur qui prend une liste d'images encodées en argument
+         gen_premieres_img (self) : decode des images et les enregistre
+         selection1_final (self) : vérifie qu'une seule image soit choisie
+         selection_1vs5 (self) : vérifie qu'il un nombre d'images sélectionnées entre 1 et 5 inclu
+         nextimg (self) : renouvelle les images en passant par algo_gen si le nombre d'itération n'excède pas 10
+         algo_gen (self) : renouvelle les images
+         next_window (self) : passe à la fenêtre suivante
 
-            """
+    """
 
     def __init__(self, nom, prenom, date, img):
         super().__init__()

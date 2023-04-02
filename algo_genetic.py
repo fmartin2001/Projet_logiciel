@@ -1,12 +1,11 @@
 
 import numpy as np
-import copy
 
 
 # Mutation function
 def mutation(P, Tm):
     """
-    Change de manière aléatoire avec une probabilité Tm la valeur d'un pixel
+        Change de manière aléatoire avec une probabilité Tm la valeur d'un pixel
     parameters :
         P (nDarray) : liste d'images
         Tm (float) : seuil, probabilité de mutations
@@ -30,13 +29,13 @@ def mutation(P, Tm):
 def crossing_over_temp(P, Tc):
     """
         Croise plusieurs images
-        parameters :
-            P (nDarray) : liste d'images
-            Tc (float) : seuil, probabilité de mutations
-        return :
-            new_P (nDarray) : liste d'images croisées
-            liste (nDarray) : listes d'indices
-        """
+    parameters :
+        P (nDarray) : liste d'images
+        Tc (float) : seuil, probabilité de mutations
+    return :
+        new_P (nDarray) : liste d'images croisées
+        liste (nDarray) : listes d'indices
+    """
     new_P = np.copy(P)
     liste = []
 
@@ -54,7 +53,7 @@ def crossing_over_temp(P, Tc):
 
 def new_img_generator_debut(encoded_img_selected,taille):
     """
-    1 ou 2 img arrivent normalement sous forme de liste
+        1 ou 2 img arrivent normalement sous forme de liste
     parameters :
         encoded_img_selected (nDarray) : liste d'images encodées et sélectionnées
         taille (int) : taille du tableau d'images choisies à l'initiale
@@ -75,7 +74,7 @@ def new_img_generator_debut(encoded_img_selected,taille):
 
 def new_img_generator_fin(encoded_img_selected, taille):
     """
-    1 ou 2 img arrivent normalement sous forme de liste
+        1 ou 2 img arrivent normalement sous forme de liste
     parameters :
         encoded_img_selected (nDarray) : liste d'images encodées et sélectionnées
         taille (int) : taille du tableau d'images choisies à l'initiale
