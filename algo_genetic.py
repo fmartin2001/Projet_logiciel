@@ -61,7 +61,7 @@ def new_img_generator_debut(encoded_img_selected,taille):
         res (nDarray) : liste de 6 images mélange d'images choisies, mutées et nouvelles
     """
     taille=max(taille,2)
-    new_img_proposed = mutation(encoded_img_selected[0:taille],0.1)
+    new_img_proposed = mutation(encoded_img_selected[0:taille],0.15)
     new_img, indices = crossing_over_temp(new_img_proposed,0.6)
     res=[]
     nb_modified = 6-len(encoded_img_selected)
@@ -82,7 +82,7 @@ def new_img_generator_fin(encoded_img_selected, taille):
         res (nDarray) : liste de 6 images mélange d'images choisies, mutées et nouvelles
     """
     taille = max(taille, 2)
-    new_img = mutation(encoded_img_selected[0:taille],0.1)
+    new_img = mutation(encoded_img_selected[0:taille],0.2)
     res=[]
     nb_modified = 6-len(encoded_img_selected)
     for i in range (nb_modified):
@@ -94,6 +94,6 @@ def new_img_generator_fin(encoded_img_selected, taille):
 if __name__ == "__main__":
     # Test des fonctions du fichier
     liste_img_encoded = np.load("Data/20_encoded_img.npy")
-    liste_mutations = mutation(liste_img_encoded)
-    liste_crossing, indices = crossing_over(liste_img_encoded)  # c'est quoi indices ?
-    new_img_generator(liste_img_encoded)
+    liste_mutations = mutation(liste_img_encoded,0.2)
+    liste_crossing, indices = crossing_over_temp(liste_img_encoded,0.6)
+

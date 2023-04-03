@@ -95,7 +95,8 @@ def save_encoded_img(img_pixel_list):
         Enregistre les images encodées
     Parameters : 
         img_pixel_list (numpy.array) : images à enregistrer
-    Return : aucun
+    Return :
+        Aucun
     """
     encoder=load_model("./model/Model/encoder_smallset_1024_100_8864")
     encoded_img = encoder.predict(img_pixel_list)

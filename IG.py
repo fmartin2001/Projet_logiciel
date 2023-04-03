@@ -23,19 +23,19 @@ from datetime import datetime
 cnt = 1
 
 decoder = load_model("./Model/decoder_smallset_1024_100_8864/",compile=False)  # decoder
-banque_img =np.load('./Data/1000_encoded_img.npy')  # Banque d'image encodées
+banque_img = np.load('./Data/1000_encoded_img.npy')  # Banque d'image encodées
 banque_filtre = []  # Images encodées correspondant aux caracteristiques choisie en fen2
 index_derniere_img_utilisee = 6  # Pour ne pas rechoisir les mêmes images plusieurs fois
 
 
 class customButton(QPushButton):
     """
-        Redefinie le widget QPushButton pour sélectionner des visages
+        Redéfinie le widget QPushButton pour sélectionner des visages
     Attributes:
         Aucun attribut en plus mais définition d'une taille fixe et d'une couleur de fond
 
     Methods :
-         on_click(self) : Redefinition de l'evenement clic qui change la couleur et le logo du bouton
+         on_click(self) : Redefinition de l'évênement clic qui change la couleur et le logo du bouton
     """
 
     def __init__(self, parent=None):
@@ -60,14 +60,12 @@ class customButton(QPushButton):
 
 class FEN0(QWidget):
     """
-        Fenetre de presentation du logiciel
+        Fenêtre de présentation du logiciel
     Attributes:
-        Label (QLabel) : phrase d'introduction
-        image_label (QLabel) : le logo du logiciel
-        nextfen (QWidget) : la fenetre suivante
-    Methods :
-         nextwindow2(self) : passe à la fenetre suivante (nextfen)
-    """
+        Label (QLabel) : Phrase d'introduction
+        image_label (QLabel) : Le logo du logiciel
+        nextfen (QWidget) : La fenêtre suivante
+     """
 
     def __init__(self):
         super().__init__()
@@ -101,18 +99,17 @@ class FEN0(QWidget):
 
 class FEN1(QWidget):
     """
-        Fenetre pour rentrer et sauvegarder les informations de l'utilisateur
+        Fenêtre pour rentrer et sauvegarder les informations de l'utilisateur.
         Elle contient trois champs à remplir
-        Si un champs est vide au moment de la validation, un message d'erreur apparait
+        Si un champ est vide au moment de la validation, un message d'erreur apparait
     Attributes:
         e1 (QLineEdit) : champs pour rentrer le nom
         e2 (QLineEdit) : champs pour rentrer le prénom
         e3 (QLineEdit) : champs pour rentrer la date de naissance
         btn (QPushButton) : bouton "soumettre" pour passer à la fenêtre suivante
         nextfen (QWidget) : la fenêtre suivante
-    Methods :
-         nextwindow(self) : passe à la fenêtre suivante (nextfen)
-         rempli(self) : vérifie que l'utilisateur est renseigné le nom prénom et la date de naissance
+    Warning:
+        Pour la date de naissance il est nécessaire de placer le curseur à gauche du champ et seuls les chiffres sont supportés.
     """
 
     def __init__(self, parent=None):
@@ -124,6 +121,9 @@ class FEN1(QWidget):
         self.initUI()
 
     def initUI(self):
+        """
+        Place les widgets dans la fenêtre.
+        """
 
         # permet de rentrer le nom
         self.e1.setMaxLength(20)
@@ -162,8 +162,8 @@ class FEN1(QWidget):
 
     def rempli(self):
         """
-        Renvoie vers la fonction nextwindow si tout est renseigné
-        Renvoie un message d'erreur si un des champs est vide
+        Renvoie vers la fonction nextwindow() si tout est renseigné.
+        Renvoie un message d'erreur si un des champs est vide.
         """
         if (self.e1.text() != "" and self.e2.text() != "" and self.e3.text() != "//"):
             self.nextwindow()
@@ -175,7 +175,7 @@ class FEN1(QWidget):
 
     def nextwindow(self):
         """
-        Ferme la fenetre 1 puis ouvre la fenetre 2 (la suivante)
+        Ferme la fenetre 1 puis ouvre la fenetre 2 (la suivante).
         """
         # changement de fenetre
         self.nextfen.show()
@@ -184,21 +184,21 @@ class FEN1(QWidget):
 
 class FEN2(QWidget):
     """
-            Fenêtre pour rentrer les caractéristiques de l'agresseur
+            Fenêtre pour rentrer les caractéristiques de l'agresseur.
         Attributes:
             label1 (QLabel) : "Sexe"
             label2 (QLabel) : "Couleur des cheveux"
             label3 (QLabel) : "Pilosité faciale"
             label4 (QLabel) : "Avait-il/elle des lunettes?"
             label5 (QLabel) : "Avait-il/elle un gros nez?"
-            Combo boxes (nose,hair_combo,sexe_combo,lunettes) respectivement les choix pour chaque label
-            bouton_retour (QPushButton) : bouton "retour" pour revenir à la fenêtre précédente
-            nextfen (QWidget) : la fenêtre suivante
-            firstwindow (QWidget) : la fenêtre précédente
-        Methods :
-             nextwindow2(self) : passe à la fenetre suivante (nextfen)
-             backwindow(self) : revient à la fenetre precedente
-             submit(self) : sauvegarde les caractéristiques choisies par l'utilisateur
+            Combo boxes (nose,hair_combo,sexe_combo,lunettes) : Respectivement les choix pour chaque label
+            bouton_retour (QPushButton) : Bouton "retour" pour revenir à la fenêtre précédente
+            nextfen (QWidget) : La fenêtre suivante
+            firstwindow (QWidget) : La fenêtre précédente
+        Methods:
+             nextwindow2(self) : Passe à la fenêtre suivante (nextfen)
+             backwindow(self) : Revient à la fenêtre précédente
+             submit(self) : Sauvegarde les caractéristiques choisies par l'utilisateur
         """
 
     def __init__(self, nom, prenom, date, parent=None):
@@ -209,6 +209,9 @@ class FEN2(QWidget):
         self.initUI()
 
     def initUI(self):
+        """
+        Place les widgets dans la fenêtre.
+        """
         self.setWindowTitle('Caractéristiques')
         self.setGeometry(320, 320, 320, 320)
 
@@ -272,9 +275,9 @@ class FEN2(QWidget):
         Fonction appelée lorsque l'utilisateur clique sur le bouton "button" pour soumettre.
         Si au moins une caractéristique est choisie, la fonction nextwindow2 est appelée.
         Sinon, un message d'erreur apparaît.
-        Permet aussi d'établir une sous base d'images encodées qui correspondent aux caractéristiques sélectionnées
+        Permet aussi d'établir une sous base d'images encodées qui correspondent aux caractéristiques sélectionnées.
 
-        Utilise les variables globales banque_img et banque_filtre
+        Utilise les variables globales banque_img et banque_filtre.
         """
         nose = self.nose.currentText()
         hair_color = self.hair_combo.currentText()
@@ -311,7 +314,7 @@ class FEN2(QWidget):
 
     def nextwindow2(self):
         """
-        Ouvre la fenêtre suivante (Fenetre 3) et ferme la fenêtre courante.
+        Ouvre la fenêtre suivante (Fenêtre 3) et ferme la fenêtre courante.
         Utilise la variable globale banque_filtre
         """
         self.nextfen = FEN3(self.nom, self.prenom, self.date, banque_filtre)
@@ -330,27 +333,23 @@ class FEN2(QWidget):
 class FEN3(QWidget):
     """
         Fenêtre pour choisir récursivement l'image la plus ressemblante à l'agresseur
+    Warning:
+        img_encod doit comporter au moins 6 images pour pouvoir afficher une première fois la fenêtre.
     Attributes:
-        img_encod (ndarray) : liste d'images encodées
+        img_encod (ndarray) : Liste d'images encodées
         pour i de 1 à 6 :
-        img{i} (QPixmap) : l'image décodée d'un visage
-        label{i} (QLabel) : le label comportant l'image
-        btn_selection{i} (CustomButton) : bouton pour sélectionner l'image
-        btn1 (QPushButton) : bouton "continuer" pour relancer la fenetre avec de nouvelles images
-        btn2 (QPushButton) : bouton "valider" pour valider le visage sélectionné passer à la fenetre suivante
-        fen (QGridLayout) : grille pour disposer tous les éléments
-        nextfen (QWidget) : la fenetre suivante
-        nom (String) : le nom de l'utilisateur
-        prénom (String) : le prénom de l'utilisateur
-        date (String) : la date de naissance
-    Methods :
-        __init__ (self,img) : constructeur qui prend une liste d'images encodées en argument
-         gen_premieres_img (self) : decode des images et les enregistre
-         selection1_final (self) : vérifie qu'une seule image soit choisie
-         selection_1vs5 (self) : vérifie qu'il un nombre d'images sélectionnées entre 1 et 5 inclu
-         nextimg (self) : renouvelle les images en passant par algo_gen si le nombre d'itération n'excède pas 10
-         algo_gen (self) : renouvelle les images
-         next_window (self) : passe à la fenêtre suivante
+        img{i} (QPixmap) : L'image décodée d'un visage
+        label{i} (QLabel) : Le label comportant l'image
+        btn_selection{i} (CustomButton) : Bouton pour sélectionner l'image
+        btn1 (QPushButton) : Bouton "continuer" pour relancer la fenêtre avec de nouvelles images
+        btn2 (QPushButton) : Bouton "valider" pour valider le visage sélectionné passer à la fenêtre suivante
+        fen (QGridLayout) : Grille pour disposer tous les éléments
+        nextfen (QWidget) : La fenêtre suivante
+        nom (String) : Le nom de l'utilisateur
+        prénom (String) : Le prénom de l'utilisateur
+        date (String) : La date de naissance
+    Methods:
+        __init__ (self,img) : Constructeur qui prend une liste d'images encodées en argument.
 
     """
 
@@ -451,19 +450,19 @@ class FEN3(QWidget):
         mat_im.imsave("Img/img6.png", img_list[5])
 
     def nextimg(self):
-        """Gère le renouvellement des images de la fenetre et appelle l'algo genetique si besoin
+        """Gère le renouvellement des images de la fenetre et appelle l'algo genetique si besoin.
 
-        la fonction compte le nombre d'itération de l'algo_gen
+        La fonction compte le nombre d'itération de l'algo_gen.
 
-        si le nombre d'itération est superieur à 25,
-        un message d'erreur apparait et l'algo génétique s'arrête
+        Si le nombre d'itération est superieur à 25,
+        un message d'erreur apparait et l'algo génétique s'arrête.
 
-        sinon appelle l'algo génétique
+        Sinon appelle l'algo génétique.
 
-        Utilise la variable globale cnt qui est incrémenté de 1 à chaque passage
+        Utilise la variable globale cnt qui est incrémenté de 1 à chaque passage.
 
-        see also :
-        algo_gen()
+        See also:
+            algo_gen()
         """
         global cnt
 
@@ -486,12 +485,12 @@ class FEN3(QWidget):
 
     def algo_gen(self):
         """Algo genetique
-        Reste sur la meme fenetre en changeant les images
-        Envoie sous forme de liste les images selectionnees par l'utilisateur à l'algorithme genetique
+        Reste sur la meme fenêtre en changeant les images
+        Envoie sous forme de liste les images sélectionnees par l'utilisateur à l'algorithme genetique
         Actualise img1.jpg, img2.jpg, img3.jpg, img4.jpg
-        Relance la fenetre
+        Relance la fenêtre
         Le coût de l'algorithme est remplacé par le choix de l'utilisateur
-        On procéde à des mutations sur les images choisies
+        On procède à des mutations sur les images choisies
         On recrée une population avec les images choisies, les images modifiées et d'autres images "random"
         """
         list = [self.btn_selection1, self.btn_selection2, self.btn_selection3, self.btn_selection4, self.btn_selection5,
@@ -589,6 +588,7 @@ class FEN3(QWidget):
 
     def nextwindow(self, img):
         """ Renvoie sur la fenêtre suivante (Fenêtre 4) et ferme la fenêtre courante
+
         Parameters:
             img (QPixmap): Image finale choisie par l'utilisateur
         """
@@ -602,18 +602,18 @@ class FEN4(QMainWindow):
     """
         Fenêtre pour valider son choix et générer un pdf
         Attributes:
-            label (QLabel) : décrit le role de la fenetre
-            label2 (QLabel) : décrit comment remplir le champs text_edit
+            label (QLabel) : Décrit le role de la fenetre
+            label2 (QLabel) : Décrit comment remplir le champs text_edit
             text_edit (QTextEdit) : Vérification des noms et prénoms
             image_pixmap (DArray) : L'image sélectionnée
-            button (QPushButton) : bouton pour fermer le logiciel et générer un pdf en sortie
-            nom (String) : le nom de l'utilisateur
-            prenom (String) : le prénom de l'utilisateur
-            date (String) : la date de naissance
-        Methods :
-            __init__ (self,image) : constructeur qui prend l'image choisie dans la page precedente en argument
-             save_to_pdf (self) : génère un pdf de 2 pages qui permettent d'enregistrer le portrait robot avec et sans l'identité de la victime
-            vérification (self) : vérifie les nom et prénom entrés
+            button (QPushButton) : Bouton pour fermer le logiciel et générer un pdf en sortie
+            nom (String) : Le nom de l'utilisateur
+            prenom (String) : Le prénom de l'utilisateur
+            date (String) : La date de naissance
+        Methods:
+            __init__ (self,image) : Constructeur qui prend l'image choisie dans la page precedente en argument
+             save_to_pdf (self) : Génère un pdf de 2 pages qui permettent d'enregistrer le portrait robot avec et sans l'identité de la victime
+            vérification (self) : Vérifie les nom et prénom entrés
         """
 
     def __init__(self, nom, prenom, date, image):
@@ -720,10 +720,10 @@ class FEN4(QMainWindow):
 
     def verification(self, verif_, text_):
         """
-        Compare le contenu de deux chaînes de caractères.Si le contenu est le même, renvoie True. Sinon, un message d'erreur apparaît et la fonction renvoie False.
+            Compare le contenu de deux chaînes de caractères.Si le contenu est le même, renvoie True. Sinon, un message d'erreur apparaît et la fonction renvoie False.
         Parameters:
-            verif_ (str)
-            text_ (str)
+            verif_ (str) : Les coordonnées rentrées en Fenêtre 4
+            text_ (str) : Les coordonnées rentrées en Fenêtre 1
         Return:
             return (bool):
         """
