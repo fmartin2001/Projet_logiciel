@@ -305,6 +305,7 @@ class FEN2(QWidget):
             for i in range(100):
                 banque_filtre.append(banque_img[liste_img_filtre[i]])
             banque_filtre = np.array(banque_filtre)
+            banque_img=[]
             self.nextwindow2()
         else:
             msg_err = QMessageBox()
