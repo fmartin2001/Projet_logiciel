@@ -704,7 +704,7 @@ class FEN4(QMainWindow):
             # Sauvegarde de l'image dans le directory
             qimage.save("./img_choisie.png", "PNG", -1)
             # Dessine l'image dans le pdf
-            c.drawInlineImage("./img_choisie.png", 160, 160, height=128, width=128)
+            c.drawInlineImage("./img_choisie.png", 244, 400, height=128, width=128)
             # Enregistrer le PDF et fermer le canvas
             c.save()
 
