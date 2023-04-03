@@ -33,7 +33,7 @@ def create_dict(nose, hair_color, sex, lunettes, pilo):
     """
         Crée un dictionnaire en fonction des réponses de l'utilisateur (utilisé pour filtrer)
     Arguments : 
-        Nose, hair_color, sex, lunettes, pilo (str) : résultats des initiaux choix de l'utilisateur concernant ces caractéristiques
+        Nose, hair_color, sex, lunettes, pilo (str) : résultats des choix initiaux de l'utilisateur concernant ces caractéristiques
     Return : 
         dic_sex (dict) : associe les caractéristiques avec un chiffre, 1 si la caractéristiques est présnte, -1 sinon
     """

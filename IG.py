@@ -100,7 +100,7 @@ class FEN0(QWidget):
 class FEN1(QWidget):
     """
         Fenêtre pour rentrer et sauvegarder les informations de l'utilisateur.
-        Elle contient trois champs à remplir
+        Elle contient trois champs à remplir.
         Si un champ est vide au moment de la validation, un message d'erreur apparait
     Attributes:
         e1 (QLineEdit) : champs pour rentrer le nom
@@ -175,7 +175,7 @@ class FEN1(QWidget):
 
     def nextwindow(self):
         """
-        Ferme la fenetre 1 puis ouvre la fenetre 2 (la suivante).
+        Ferme la fenêtre 1 puis ouvre la fenêtre 2 (la suivante).
         """
         # changement de fenetre
         self.nextfen.show()
@@ -422,7 +422,7 @@ class FEN3(QWidget):
         self.fen.addWidget(self.bt1, 6, 3, alignment=Qt.AlignRight)
         self.fen.addWidget(self.bt2, 6, 1, alignment=Qt.AlignLeft)
 
-        # Attribution au boutons de validation les évenements correspondants
+        # Attribution aux boutons de validation les évenements correspondants
         self.bt1.clicked.connect(self.selection1vs5)
         self.bt2.clicked.connect(self.selection1_final)
 
@@ -450,11 +450,11 @@ class FEN3(QWidget):
         mat_im.imsave("Img/img6.png", img_list[5])
 
     def nextimg(self):
-        """Gère le renouvellement des images de la fenetre et appelle l'algo genetique si besoin.
+        """Gère le renouvellement des images de la fenêtre et appelle l'algo génétique si besoin.
 
         La fonction compte le nombre d'itération de l'algo_gen.
 
-        Si le nombre d'itération est superieur à 25,
+        Si le nombre d'itération est supérieur à 25,
         un message d'erreur apparait et l'algo génétique s'arrête.
 
         Sinon appelle l'algo génétique.
@@ -484,11 +484,13 @@ class FEN3(QWidget):
             msg.exec_()
 
     def algo_gen(self):
-        """Algo genetique
-        Reste sur la meme fenêtre en changeant les images
-        Envoie sous forme de liste les images sélectionnees par l'utilisateur à l'algorithme genetique
+        """Algo génétique
+
+        Reste sur la même fenêtre en changeant les images
+        Envoie sous forme de liste les images sélectionnées par l'utilisateur à l'algorithme génétique
         Actualise img1.jpg, img2.jpg, img3.jpg, img4.jpg
         Relance la fenêtre
+
         Le coût de l'algorithme est remplacé par le choix de l'utilisateur
         On procède à des mutations sur les images choisies
         On recrée une population avec les images choisies, les images modifiées et d'autres images "random"
@@ -531,9 +533,9 @@ class FEN3(QWidget):
         self.close()
 
     def selection1vs5(self):
-        """Vérification du nombre d'images selectionnées :
-        Il doit etre égal entre 1 et 5 inclu
-        Si nombre reglementaire, renvoie à la fonction nextimg
+        """Vérification du nombre d'images sélectionnées :
+        Il doit être égal entre 1 et 5 inclus
+        Si nombre réglementaire, renvoie à la fonction nextimg
         Sinon affiche un message d'erreur
         """
         list = [self.btn_selection1, self.btn_selection2, self.btn_selection3, self.btn_selection4, self.btn_selection5,
@@ -561,9 +563,9 @@ class FEN3(QWidget):
             msg.exec_()
 
     def selection1_final(self):
-        """Verification du nombre d'images selectionnées pour la validation finale
-        Il doit étre egal à 1 pour valider
-        Si nombre reglementaire, renvoie à la fonction nextwindow
+        """Verification du nombre d'images sélectionnées pour la validation finale
+        Il doit être egal à 1 pour valider
+        Si nombre réglementaire, renvoie à la fonction nextwindow
         Sinon affiche un message d'erreur
         """
         list = [self.btn_selection1, self.btn_selection2, self.btn_selection3, self.btn_selection4, self.btn_selection5,
@@ -600,9 +602,9 @@ class FEN3(QWidget):
 
 class FEN4(QMainWindow):
     """
-        Fenêtre pour valider son choix et générer un pdf
+            Fenêtre pour valider son choix et générer un pdf
         Attributes:
-            label (QLabel) : Décrit le role de la fenetre
+            label (QLabel) : Décrit le role de la fenêtre
             label2 (QLabel) : Décrit comment remplir le champs text_edit
             text_edit (QTextEdit) : Vérification des noms et prénoms
             image_pixmap (DArray) : L'image sélectionnée
@@ -655,7 +657,7 @@ class FEN4(QMainWindow):
 
     def save_to_pdf(self):
         """
-        Appelle la fonction verification qui renvoie un boolean: elle vérofoe que le nom et le prénom renseignés à la fenêtre 1 correspondent à ceux renseignés dans le QTextEdit "text_edit".
+        Appelle la fonction verification qui renvoie un boolean: elle vérifie que le nom et le prénom renseignés à la fenêtre 1 correspondent à ceux renseignés dans le QTextEdit "text_edit".
         Si True: Sauvegarde l'image choisie, le nom, le prénom, la date de naissance de la victime et la date du jour dans un fichier PDF au format nom_prenom.pdf dans le dossier User.
         Si False: Ne fait rien
         """
