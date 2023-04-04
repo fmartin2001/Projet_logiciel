@@ -22,8 +22,8 @@ from datetime import datetime
 # variables globales : compteur pour l'algo gen et les images choisies
 cnt = 1
 
-decoder = load_model("./Model/decoder_smallset_1024_100_8864/",compile=False)  # decoder
-banque_img = np.load('./Data/1000_encoded_img.npy')  # Banque d'image encodées
+decoder = load_model("./Model/decoder_smallset_512_100_8864/",compile=False)  # decoder
+banque_img = np.load('./Data/50000_encoded_img.npy')  # Banque d'image encodées
 banque_filtre = []  # Images encodées correspondant aux caracteristiques choisie en fen2
 index_derniere_img_utilisee = 6  # Pour ne pas rechoisir les mêmes images plusieurs fois
 
